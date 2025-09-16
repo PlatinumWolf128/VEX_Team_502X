@@ -1,2 +1,2 @@
 # VEX_Team_502X
-This is where VEX Team 502X will store their code.
+Holds all the code for VEX V5RC Team 502X
