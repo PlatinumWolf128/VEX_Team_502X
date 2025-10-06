@@ -9,13 +9,13 @@ using std::min;
 brain Brain;
 controller Controller;
 
-motor LeftFront(LEFT_FRONT_PORT, true);
+motor LeftFront(LEFT_FRONT_PORT);
 motor LeftMiddle(LEFT_MIDDLE_PORT);
 motor LeftBack(LEFT_BACK_PORT);
 
 motor RightFront(RIGHT_FRONT_PORT, true);
-motor RightMiddle(RIGHT_MIDDLE_PORT);
-motor RightBack(RIGHT_BACK_PORT);
+motor RightMiddle(RIGHT_MIDDLE_PORT, true);
+motor RightBack(RIGHT_BACK_PORT, true);
 
 motor_group Left(LeftFront, LeftMiddle, LeftBack);
 motor_group Right(RightFront, RightMiddle, RightBack);
