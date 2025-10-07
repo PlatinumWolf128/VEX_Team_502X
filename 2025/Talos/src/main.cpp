@@ -31,6 +31,13 @@ void pre_auton(void) {
 
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
+
+  // Setting the velocity of the intake motors.
+  IntakeFrontMiddle.setVelocity(intakeMotorSpeed, pct);
+  IntakeFrontTop.setVelocity(intakeMotorSpeed, pct);
+  IntakeBack.setVelocity(intakeMotorSpeed, pct);
+
+
 }
 
 /*---------------------------------------------------------------------------*/
@@ -66,6 +73,7 @@ void autonomous(void) {
 void usercontrol(void) {
   // User control code here, inside the loop
   while (1) {
+
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
@@ -75,9 +83,25 @@ void usercontrol(void) {
     
     robotDrive(leftJoystickFrontBackPosition, leftJoystickLeftRightPosition);
 
-    wait(20, msec); // Sleep the task for a short amount of time to
-                    // prevent wasted resources.
+    intakeState = NEUTRAL;
+    if (Controller.ButtonL1.pressing()) {
+      intakeState = INTAKE;
+    } else if (Controller.ButtonR1.pressing()) {
+      intakeState = OUTTAKE_TO_TOP;
+    } else if (Controller.ButtonR2.pressing()) {
+      intakeState = OUTTAKE_TO_BOTTOM;
+    } else {
+      intakeState = NEUTRAL;
+    }
+
+    intakeMechanism(intakeState);
+
+    // Sleep the task for a short amount of time to prevent wasted resources.
+    // (Added by the VEX gods themselves)
+    wait(20, msec); 
+
   }
+  
 }
 
 //

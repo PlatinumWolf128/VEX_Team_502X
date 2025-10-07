@@ -16,6 +16,11 @@ const int RIGHT_FRONT_PORT = 4;
 const int RIGHT_MIDDLE_PORT = 5;
 const int RIGHT_BACK_PORT = 6;
 
+// The port numbers for the motors used in the intake mechanism.
+const int INTAKE_FRONT_MIDDLE_PORT = 7;
+const int INTAKE_FRONT_TOP_PORT = 8;
+const int INTAKE_BACK_PORT = 9;
+
 // The motors on the left side of the drivetrain.
 extern vex::motor LeftFront;
 extern vex::motor LeftMiddle;
@@ -26,10 +31,22 @@ extern vex::motor RightFront;
 extern vex::motor RightMiddle;
 extern vex::motor RightBack;
 
+// The motors used in the intake mechanism.
+extern vex::motor IntakeFrontMiddle;
+extern vex::motor IntakeFrontTop;
+extern vex::motor IntakeBack; 
+
 // These are the motor group objects for the drivetrain, each one representing
 // all the motors on one side of the drivetrain.
 extern vex::motor_group Left;
 extern vex::motor_group Right;
+
+// The speed at which all the motors in the intake subsystem move at,
+// represented as a percentage of the maximum possible speed.
+const double intakeMotorSpeed = 90;
+
+enum IntakeState {NEUTRAL, INTAKE, OUTTAKE_TO_TOP, OUTTAKE_TO_BOTTOM};
+extern IntakeState intakeState;
 
 /**
  * Controls the drivetrain by adjusting the speed of the motors based on the
@@ -48,5 +65,7 @@ extern vex::motor_group Right;
  * 
  */
 void robotDrive(double frontBackSpeed, double turnSpeed);
+
+void intakeMechanism(IntakeState intakeState);
 
 #endif

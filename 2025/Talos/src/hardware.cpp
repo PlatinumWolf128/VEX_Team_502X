@@ -17,8 +17,14 @@ motor RightFront(RIGHT_FRONT_PORT, true);
 motor RightMiddle(RIGHT_MIDDLE_PORT, true);
 motor RightBack(RIGHT_BACK_PORT, true);
 
+motor IntakeFrontMiddle(INTAKE_FRONT_MIDDLE_PORT);
+motor IntakeFrontTop(INTAKE_FRONT_TOP_PORT);
+motor IntakeBack(INTAKE_BACK_PORT);
+
 motor_group Left(LeftFront, LeftMiddle, LeftBack);
 motor_group Right(RightFront, RightMiddle, RightBack);
+
+IntakeState intakeState = NEUTRAL;
 
 void robotDrive(double frontBackSpeed, double turnSpeed) {
 
@@ -37,5 +43,51 @@ void robotDrive(double frontBackSpeed, double turnSpeed) {
 
     Left.spin(fwd, leftSideSpeed, pct);
     Right.spin(fwd, rightSideSpeed, pct);
+
+}
+
+void intakeMechanism(IntakeState intakeState) {
+   
+    bool noNeedForPneumatics = true;
+
+    if (noNeedForPneumatics) {
+        
+        switch (intakeState) {
+            
+            case INTAKE:
+                IntakeFrontMiddle.spin(fwd);
+                IntakeBack.spin(fwd);
+                break;
+
+            case OUTTAKE_TO_TOP:
+                IntakeFrontMiddle.spin(fwd);
+                IntakeBack.spin(reverse);
+                IntakeFrontTop.spin(fwd);
+                break;
+
+            case OUTTAKE_TO_BOTTOM:
+                IntakeFrontMiddle.spin(reverse);
+                IntakeBack.spin(reverse);
+                break;
+
+            case NEUTRAL:
+                IntakeFrontMiddle.stop(brake);
+                IntakeFrontTop.stop(brake);
+                IntakeBack.stop(brake);
+
+            default:
+                Controller.Screen.setCursor(0, 0);
+                Controller.Screen.print("You shouldn't be here.");
+                break;
+
+        }
+
+    } else {
+
+        // TODO: Learn how to code pneumatics and then make a state machine
+        // similar to the one above while incorporating the pneumatics.
+
+    }
+
 
 }
