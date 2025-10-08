@@ -41,10 +41,14 @@ extern vex::motor IntakeBack;
 extern vex::motor_group Left;
 extern vex::motor_group Right;
 
+extern vex::pneumatics Pneumatics;
+
 // The speed at which all the motors in the intake subsystem move at,
 // represented as a percentage of the maximum possible speed.
 const double intakeMotorSpeed = 90;
 
+// The possible states for the intake mechanism state machine and the variable
+// that represents them. 
 enum IntakeState {NEUTRAL, INTAKE, OUTTAKE_TO_TOP, OUTTAKE_TO_BOTTOM};
 extern IntakeState intakeState;
 

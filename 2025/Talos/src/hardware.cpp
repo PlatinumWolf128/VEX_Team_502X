@@ -24,6 +24,8 @@ motor IntakeBack(INTAKE_BACK_PORT);
 motor_group Left(LeftFront, LeftMiddle, LeftBack);
 motor_group Right(RightFront, RightMiddle, RightBack);
 
+pneumatics Pneumatics(Brain.ThreeWirePort.A);
+
 IntakeState intakeState = NEUTRAL;
 
 void robotDrive(double frontBackSpeed, double turnSpeed) {
@@ -48,46 +50,63 @@ void robotDrive(double frontBackSpeed, double turnSpeed) {
 
 void intakeMechanism(IntakeState intakeState) {
    
+    // Disable if we decide to use pneumatics
     bool noNeedForPneumatics = true;
 
-    if (noNeedForPneumatics) {
+    // If we're using pneumatics, this remembers whether or not the piston has
+    // been extended to change the orientation of the ramp
+    static bool extended = false;
         
-        switch (intakeState) {
-            
-            case INTAKE:
-                IntakeFrontMiddle.spin(fwd);
+    switch (intakeState) {
+        
+        case INTAKE:
+            if (noNeedForPneumatics) {
+                // The back roller pulls the block into the hopper
                 IntakeBack.spin(fwd);
-                break;
-
-            case OUTTAKE_TO_TOP:
-                IntakeFrontMiddle.spin(fwd);
+                if (extended == false) {
+                    // In theory extends the back of the ramp to allow for
+                    // intaking
+                    Pneumatics.set(true);
+                }
+            } else {
+                // The back roller pushes the block upwards
                 IntakeBack.spin(reverse);
-                IntakeFrontTop.spin(fwd);
-                break;
+            }
+            // The middle roller pulls the block in towards the hopper
+            IntakeFrontMiddle.spin(fwd);
+            break;
 
-            case OUTTAKE_TO_BOTTOM:
-                IntakeFrontMiddle.spin(reverse);
-                IntakeBack.spin(reverse);
-                break;
+        case OUTTAKE_TO_TOP:
+            // Every roller works to push the block upwards and to the front
+            IntakeFrontMiddle.spin(fwd);
+            IntakeBack.spin(reverse);
+            IntakeFrontTop.spin(fwd);
+            if (noNeedForPneumatics == false && extended) {
+                // In theory retracts the back of the ramp to allow for
+                // outtaking
+                Pneumatics.set(false);
+            } 
+            break;
 
-            case NEUTRAL:
-                IntakeFrontMiddle.stop(brake);
-                IntakeFrontTop.stop(brake);
-                IntakeBack.stop(brake);
+        case OUTTAKE_TO_BOTTOM:
+            // The middle and back rollers work to pull blocks out of the hopper
+            // and push them out of the intake through the bottom
+            IntakeFrontMiddle.spin(reverse);
+            IntakeBack.spin(reverse);
+            break;
 
-            default:
-                Controller.Screen.setCursor(0, 0);
-                Controller.Screen.print("You shouldn't be here.");
-                break;
+        case NEUTRAL:
+            // Nothing happens and the motors stop moving
+            IntakeFrontMiddle.stop(brake);
+            IntakeFrontTop.stop(brake);
+            IntakeBack.stop(brake);
 
-        }
-
-    } else {
-
-        // TODO: Learn how to code pneumatics and then make a state machine
-        // similar to the one above while incorporating the pneumatics.
+        default:
+            // In theory you should never reach this stage
+            Controller.Screen.setCursor(0, 0);
+            Controller.Screen.print("You shouldn't be here.");
+            break;
 
     }
-
 
 }
