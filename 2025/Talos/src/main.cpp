@@ -83,7 +83,7 @@ void usercontrol(void) {
     
     robotDrive(leftJoystickFrontBackPosition, leftJoystickLeftRightPosition);
 
-    intakeState = NEUTRAL;
+    /*intakeState = NEUTRAL;
     if (Controller.ButtonL1.pressing()) {
       intakeState = INTAKE;
     } else if (Controller.ButtonR1.pressing()) {
@@ -94,7 +94,7 @@ void usercontrol(void) {
       intakeState = NEUTRAL;
     }
 
-    intakeMechanism(intakeState);
+    intakeMechanism(intakeState);*/
 
     // Sleep the task for a short amount of time to prevent wasted resources.
     // (Added by the VEX gods themselves)

@@ -7,14 +7,14 @@ extern vex::brain Brain;
 extern vex::controller Controller;
 
 // The port numbers for the motors on the left side of the drivetrain.
-const int LEFT_FRONT_PORT = 1;
-const int LEFT_MIDDLE_PORT = 2;
-const int LEFT_BACK_PORT = 3;
+const int LEFT_FRONT_PORT = 3 - 1;
+const int LEFT_MIDDLE_PORT = 10 - 1;
+const int LEFT_BACK_PORT = 1 - 1;
 
 // The port numbers for the motors on the right side of the drivetrain.
-const int RIGHT_FRONT_PORT = 4;
-const int RIGHT_MIDDLE_PORT = 5;
-const int RIGHT_BACK_PORT = 6;
+const int RIGHT_FRONT_PORT = 6 - 1;
+const int RIGHT_MIDDLE_PORT = 5 - 1;
+const int RIGHT_BACK_PORT = 4 - 1;
 
 // The port numbers for the motors used in the intake mechanism.
 const int INTAKE_FRONT_MIDDLE_PORT = 7;
