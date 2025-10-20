@@ -13,9 +13,9 @@ motor LeftFront(LEFT_FRONT_PORT, true);
 motor LeftMiddle(LEFT_MIDDLE_PORT, true);
 motor LeftBack(LEFT_BACK_PORT, true);
 
-motor RightBack(RIGHT_BACK_PORT);
 motor RightFront(RIGHT_FRONT_PORT);
 motor RightMiddle(RIGHT_MIDDLE_PORT);
+motor RightBack(RIGHT_BACK_PORT);
 
 motor IntakeFrontMiddle(INTAKE_FRONT_MIDDLE_PORT);
 motor IntakeFrontTop(INTAKE_FRONT_TOP_PORT);

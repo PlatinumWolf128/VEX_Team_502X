@@ -83,7 +83,9 @@ void usercontrol(void) {
     
     robotDrive(leftJoystickFrontBackPosition, leftJoystickLeftRightPosition);
 
-    /*intakeState = NEUTRAL;
+    /*
+    Below is the code for the intake. Uncomment it when the intake is built.
+    intakeState = NEUTRAL;
     if (Controller.ButtonL1.pressing()) {
       intakeState = INTAKE;
     } else if (Controller.ButtonR1.pressing()) {

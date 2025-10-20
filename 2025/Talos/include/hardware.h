@@ -7,19 +7,19 @@ extern vex::brain Brain;
 extern vex::controller Controller;
 
 // The port numbers for the motors on the left side of the drivetrain.
-const int LEFT_FRONT_PORT = 3 - 1;
-const int LEFT_MIDDLE_PORT = 10 - 1;
-const int LEFT_BACK_PORT = 1 - 1;
+const int LEFT_FRONT_PORT = vex::PORT3;
+const int LEFT_MIDDLE_PORT = vex::PORT10;
+const int LEFT_BACK_PORT = vex::PORT1;
 
 // The port numbers for the motors on the right side of the drivetrain.
-const int RIGHT_FRONT_PORT = 6 - 1;
-const int RIGHT_MIDDLE_PORT = 5 - 1;
-const int RIGHT_BACK_PORT = 4 - 1;
+const int RIGHT_FRONT_PORT = vex::PORT6;
+const int RIGHT_MIDDLE_PORT = vex::PORT5;
+const int RIGHT_BACK_PORT = vex::PORT4;
 
 // The port numbers for the motors used in the intake mechanism.
-const int INTAKE_FRONT_MIDDLE_PORT = 7;
-const int INTAKE_FRONT_TOP_PORT = 8;
-const int INTAKE_BACK_PORT = 9;
+const int INTAKE_FRONT_MIDDLE_PORT = vex::PORT7;
+const int INTAKE_FRONT_TOP_PORT = vex::PORT8;
+const int INTAKE_BACK_PORT = vex::PORT9;
 
 // The motors on the left side of the drivetrain.
 extern vex::motor LeftFront;
@@ -70,6 +70,29 @@ extern IntakeState intakeState;
  */
 void robotDrive(double frontBackSpeed, double turnSpeed);
 
+/**
+ * Controls the intake mechanism based on which "state" the user puts the robot
+ * into:
+ * 
+ * Pressing button L1 causes the robot to be put into the "intake" state
+ * and it intakes blocks. 
+ * 
+ * Pressing button R1 puts the robot in the "outtake to
+ * the top" state and it outtakes blocks from the top of the intake system.
+ * 
+ * Pressing button R2 puts the robot into the "outtake to the bottom" state, and
+ * it outtakes blocks from the bottom of the intake system.
+ * 
+ * The states are listed in order of priority. If L1 and R1 are both pressed for
+ * example, then the bot would still only be put into the "intake" state.
+ * Releasing all of these buttons puts the bot into the "neutral" state where
+ * the intake is not moving.
+ * 
+ * @param intakeState
+ * An enumeration of type IntakeState that represents the current state that the
+ * intake system is in.
+ * 
+ */
 void intakeMechanism(IntakeState intakeState);
 
 #endif
