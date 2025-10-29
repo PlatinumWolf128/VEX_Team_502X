@@ -43,6 +43,14 @@ void robotDrive(double frontBackSpeed, double turnSpeed) {
     leftSideSpeed = max(-100.0, min(leftSideSpeed, 100.0));
     rightSideSpeed = max(-100.0, min(rightSideSpeed, 100.0));
 
+    if (leftSideSpeed == 0) {
+        Left.stop(brake);
+    }
+    
+    if (rightSideSpeed == 0) {
+        Right.stop(brake);
+    }
+
     Left.spin(fwd, leftSideSpeed, pct);
     Right.spin(fwd, rightSideSpeed, pct);
 

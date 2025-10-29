@@ -79,9 +79,9 @@ void usercontrol(void) {
     // values based on feedback from the joysticks.
 
     double leftJoystickFrontBackPosition = Controller.Axis3.position();
-    double leftJoystickLeftRightPosition = Controller.Axis4.position();
+    double rightJoystickLeftRightPosition = Controller.Axis1.position();
     
-    robotDrive(leftJoystickFrontBackPosition, leftJoystickLeftRightPosition);
+    robotDrive(leftJoystickFrontBackPosition, rightJoystickLeftRightPosition/2);
 
     /*
     Below is the code for the intake. Uncomment it when the intake is built.
