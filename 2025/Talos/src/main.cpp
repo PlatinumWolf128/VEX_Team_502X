@@ -81,7 +81,13 @@ void usercontrol(void) {
     double leftJoystickFrontBackPosition = Controller.Axis3.position();
     double rightJoystickLeftRightPosition = Controller.Axis1.position();
     
-    robotDrive(leftJoystickFrontBackPosition, rightJoystickLeftRightPosition/2);
+    // This value below represents the sensitivity when turning the drivetrain.
+    // Increase it to increase the sensitivity. Increasing it past 1 will not
+    // change the max turning speed. Making it negative will invert the turning
+    // direction.
+    double turningSensitivity = 0.5;
+
+    robotDrive(leftJoystickFrontBackPosition, rightJoystickLeftRightPosition * turningSensitivity);
 
     /*
     Below is the code for the intake. Uncomment it when the intake is built.
