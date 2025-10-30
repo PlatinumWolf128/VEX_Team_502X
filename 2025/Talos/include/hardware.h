@@ -17,9 +17,9 @@ const int RIGHT_MIDDLE_PORT = vex::PORT5;
 const int RIGHT_BACK_PORT = vex::PORT4;
 
 // The port numbers for the motors used in the intake mechanism.
-const int INTAKE_FRONT_MIDDLE_PORT = vex::PORT7;
-const int INTAKE_FRONT_TOP_PORT = vex::PORT8;
-const int INTAKE_BACK_PORT = vex::PORT9;
+const int INTAKE_FRONT_MIDDLE_PORT = vex::PORT12;
+const int INTAKE_FRONT_TOP_PORT = vex::PORT13;
+const int INTAKE_BACK_PORT = vex::PORT14;
 
 // The motors on the left side of the drivetrain.
 extern vex::motor LeftFront;
@@ -50,7 +50,6 @@ const double intakeMotorSpeed = 90;
 // The possible states for the intake mechanism state machine and the variable
 // that represents them. 
 enum IntakeState {NEUTRAL, INTAKE, OUTTAKE_TO_TOP, OUTTAKE_TO_BOTTOM};
-extern IntakeState intakeState;
 
 /**
  * Controls the drivetrain by adjusting the speed of the motors based on the

@@ -26,8 +26,6 @@ motor_group Right(RightFront, RightMiddle, RightBack);
 
 pneumatics Pneumatics(Brain.ThreeWirePort.A);
 
-IntakeState intakeState = NEUTRAL;
-
 void robotDrive(double frontBackSpeed, double turnSpeed) {
 
     // The arcade-drive formula
@@ -82,6 +80,9 @@ void intakeMechanism(IntakeState intakeState) {
             }
             // The middle roller pulls the block in towards the hopper
             IntakeFrontMiddle.spin(fwd);
+            Controller.Screen.clearLine(1);
+            Controller.Screen.setCursor(1, 1);
+            Controller.Screen.print("Intaking");
             break;
 
         case OUTTAKE_TO_TOP:
@@ -93,7 +94,10 @@ void intakeMechanism(IntakeState intakeState) {
                 // In theory retracts the back of the ramp to allow for
                 // outtaking
                 Pneumatics.set(false);
-            } 
+            }
+            Controller.Screen.clearLine(1);
+            Controller.Screen.setCursor(1, 1);
+            Controller.Screen.print("Outtaking to top"); 
             break;
 
         case OUTTAKE_TO_BOTTOM:
@@ -101,6 +105,9 @@ void intakeMechanism(IntakeState intakeState) {
             // and push them out of the intake through the bottom
             IntakeFrontMiddle.spin(reverse);
             IntakeBack.spin(reverse);
+            Controller.Screen.clearLine(1);
+            Controller.Screen.setCursor(1, 1);
+            Controller.Screen.print("Outtaking to bottom");
             break;
 
         case NEUTRAL:
@@ -108,11 +115,16 @@ void intakeMechanism(IntakeState intakeState) {
             IntakeFrontMiddle.stop(brake);
             IntakeFrontTop.stop(brake);
             IntakeBack.stop(brake);
+            Controller.Screen.clearLine(1);
+            Controller.Screen.setCursor(1, 1);
+            Controller.Screen.print("Neutral");
+            break;
 
         default:
             // In theory you should never reach this stage
-            Controller.Screen.setCursor(0, 0);
-            Controller.Screen.print("You shouldn't be here.");
+            Controller.Screen.clearLine(1);
+            Controller.Screen.setCursor(1, 1);
+            Controller.Screen.print("You shouldn't be here");
             break;
 
     }
