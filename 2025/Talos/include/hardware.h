@@ -7,9 +7,9 @@ extern vex::brain Brain;
 extern vex::controller Controller;
 
 // The port numbers for the motors on the left side of the drivetrain.
-const int LEFT_FRONT_PORT = vex::PORT8;
-const int LEFT_MIDDLE_PORT = vex::PORT16;
-const int LEFT_BACK_PORT = vex::PORT9;
+const int LEFT_FRONT_PORT = vex::PORT7;
+const int LEFT_MIDDLE_PORT = vex::PORT15;
+const int LEFT_BACK_PORT = vex::PORT17;
 
 // The port numbers for the motors on the right side of the drivetrain.
 const int RIGHT_FRONT_PORT = vex::PORT6;
@@ -45,7 +45,7 @@ extern vex::pneumatics Pneumatics;
 
 // The speed at which all the motors in the intake subsystem move at,
 // represented as a percentage of the maximum possible speed.
-const double intakeMotorSpeed = 90;
+const double intakeMotorSpeed = 100;
 
 // The possible states for the intake mechanism state machine and the variable
 // that represents them. 

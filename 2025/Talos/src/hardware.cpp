@@ -29,7 +29,7 @@ pneumatics Pneumatics(Brain.ThreeWirePort.A);
 void robotDrive(double frontBackSpeed, double turnSpeed) {
 
     // The arcade-drive formula
-    double leftSideSpeed = (frontBackSpeed + turnSpeed);
+    double leftSideSpeed = (frontBackSpeed + turnSpeed) * 0.98;
     double rightSideSpeed = (frontBackSpeed - turnSpeed);
 
     // Caps the velocity value for either side to keep it between -100 and +100.
@@ -43,11 +43,11 @@ void robotDrive(double frontBackSpeed, double turnSpeed) {
 
     if (leftSideSpeed == 0) {
         Left.stop(brake);
-    }
+    } 
     
     if (rightSideSpeed == 0) {
         Right.stop(brake);
-    }
+    } 
 
     Left.spin(fwd, leftSideSpeed, pct);
     Right.spin(fwd, rightSideSpeed, pct);
