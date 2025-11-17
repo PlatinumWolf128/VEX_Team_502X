@@ -33,7 +33,7 @@ void pre_auton(void) {
   // Example: clearing encoders, setting servo positions, ...
 
   // Setting the velocity of the intake motors.
-  IntakeFrontMiddle.setVelocity(intakeMotorSpeed, pct);
+  IntakeFrontBottom.setVelocity(intakeMotorSpeed, pct);
   IntakeFrontTop.setVelocity(intakeMotorSpeed, pct);
   IntakeBack.setVelocity(intakeMotorSpeed, pct);
 
@@ -92,10 +92,12 @@ void usercontrol(void) {
     IntakeState intakeState = NEUTRAL;
     if (Controller.ButtonL1.pressing()) {
       intakeState = INTAKE;
-    } else if (Controller.ButtonR1.pressing()) {
-      intakeState = OUTTAKE_TO_TOP;
-    } else if (Controller.ButtonR2.pressing()) {
+    } else if (Controller.ButtonL2.pressing()) {
       intakeState = OUTTAKE_TO_BOTTOM;
+    } else if (Controller.ButtonR1.pressing()) {
+      intakeState = OUTTAKE_TO_MIDDLE;
+    } else if (Controller.ButtonR2.pressing()) {
+      intakeState = OUTTAKE_TO_TOP;
     } else {
       intakeState = NEUTRAL;
     }

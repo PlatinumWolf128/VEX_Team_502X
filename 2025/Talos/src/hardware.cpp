@@ -17,7 +17,7 @@ motor RightFront(RIGHT_FRONT_PORT);
 motor RightMiddle(RIGHT_MIDDLE_PORT);
 motor RightBack(RIGHT_BACK_PORT);
 
-motor IntakeFrontMiddle(INTAKE_FRONT_MIDDLE_PORT);
+motor IntakeFrontBottom(INTAKE_FRONT_BOTTOM_PORT);
 motor IntakeFrontTop(INTAKE_FRONT_TOP_PORT);
 motor IntakeBack(INTAKE_BACK_PORT);
 
@@ -79,7 +79,7 @@ void intakeMechanism(IntakeState intakeState) {
                 IntakeBack.spin(reverse);
             }
             // The middle roller pulls the block in towards the hopper
-            IntakeFrontMiddle.spin(fwd);
+            IntakeFrontBottom.spin(fwd);
             Controller.Screen.clearLine(1);
             Controller.Screen.setCursor(1, 1);
             Controller.Screen.print("Intaking");
@@ -87,9 +87,9 @@ void intakeMechanism(IntakeState intakeState) {
 
         case OUTTAKE_TO_TOP:
             // Every roller works to push the block upwards and to the front
-            IntakeFrontMiddle.spin(fwd);
-            IntakeBack.spin(reverse);
             IntakeFrontTop.spin(fwd);
+            IntakeFrontBottom.spin(fwd);
+            IntakeBack.spin(reverse);
             if (noNeedForPneumatics == false && extended) {
                 // In theory retracts the back of the ramp to allow for
                 // outtaking
@@ -100,10 +100,18 @@ void intakeMechanism(IntakeState intakeState) {
             Controller.Screen.print("Outtaking to top"); 
             break;
 
+        case OUTTAKE_TO_MIDDLE:
+            // The front rollers work to push blocks out through the center of
+            // the intake system, while the back rollers bring blocks out of the
+            // intake and move them upwards to be outtaked.
+            IntakeFrontTop.spin(reverse);
+            IntakeFrontBottom.spin(fwd);
+            break;
+
         case OUTTAKE_TO_BOTTOM:
-            // The middle and back rollers work to pull blocks out of the hopper
-            // and push them out of the intake through the bottom
-            IntakeFrontMiddle.spin(reverse);
+            // The front-middle and back rollers work to pull blocks out of the hopper
+            // and push them out of the intake through the bottom.
+            IntakeFrontBottom.spin(reverse);
             IntakeBack.spin(reverse);
             Controller.Screen.clearLine(1);
             Controller.Screen.setCursor(1, 1);
@@ -112,7 +120,7 @@ void intakeMechanism(IntakeState intakeState) {
 
         case NEUTRAL:
             // Nothing happens and the motors stop moving
-            IntakeFrontMiddle.stop(brake);
+            IntakeFrontBottom.stop(brake);
             IntakeFrontTop.stop(brake);
             IntakeBack.stop(brake);
             Controller.Screen.clearLine(1);
