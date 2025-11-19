@@ -102,8 +102,7 @@ void intakeMechanism(IntakeState intakeState) {
 
         case OUTTAKE_TO_MIDDLE:
             // The front rollers work to push blocks out through the center of
-            // the intake system, while the back rollers bring blocks out of the
-            // intake and move them upwards to be outtaked.
+            // the intake system, while the back rollers do nothing.
             IntakeFrontTop.spin(reverse);
             IntakeFrontBottom.spin(fwd);
             break;
