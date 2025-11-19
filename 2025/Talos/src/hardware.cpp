@@ -19,18 +19,22 @@ motor RightBack(RIGHT_BACK_PORT);
 
 motor IntakeFrontBottom(INTAKE_FRONT_BOTTOM_PORT);
 motor IntakeFrontTop(INTAKE_FRONT_TOP_PORT);
-motor IntakeBack(INTAKE_BACK_PORT);
+motor IntakeBackBottom(INTAKE_BACK_BOTTOM_PORT);
+motor IntakeBackTop(INTAKE_BACK_TOP_PORT, true);
 
 motor_group Left(LeftFront, LeftMiddle, LeftBack);
 motor_group Right(RightFront, RightMiddle, RightBack);
 
-pneumatics Pneumatics(Brain.ThreeWirePort.A);
+pneumatics BottomRampPneumatics(Brain.ThreeWirePort.C);
+pneumatics TopRampPneumatics(Brain.ThreeWirePort.D);
 
 void robotDrive(double frontBackSpeed, double turnSpeed) {
 
-    // The arcade-drive formula
+    // The arcade-drive formula:
     double leftSideSpeed = (frontBackSpeed + turnSpeed) * 0.98;
     double rightSideSpeed = (frontBackSpeed - turnSpeed);
+    // leftSideSpeed is being multiplied by 0.98 in order to stop the robot from
+    // pulling to the right when it drives forwards.
 
     // Caps the velocity value for either side to keep it between -100 and +100.
     // For example, if leftSideSpeed is somehow set to 300, then the min()
@@ -56,27 +60,29 @@ void robotDrive(double frontBackSpeed, double turnSpeed) {
 
 void intakeMechanism(IntakeState intakeState) {
    
-    // Disable if we decide to use pneumatics
-    bool noNeedForPneumatics = true;
+    // Set FALSE if we decide to use pneumatics at the top of the intake system
+    // Set TRUE if we decide NOT to use pneumatics
+    bool noNeedForPneumatics = false;
 
     // If we're using pneumatics, this remembers whether or not the piston has
     // been extended to change the orientation of the ramp
     static bool extended = false;
-        
+    
     switch (intakeState) {
         
         case INTAKE:
             if (noNeedForPneumatics) {
                 // The back roller pulls the block into the hopper
-                IntakeBack.spin(fwd);
+                IntakeBackBottom.spin(fwd);
                 if (extended == false) {
                     // In theory extends the back of the ramp to allow for
                     // intaking
-                    Pneumatics.set(true);
+                    TopRampPneumatics.set(true);
+                    extended = true;
                 }
             } else {
                 // The back roller pushes the block upwards
-                IntakeBack.spin(reverse);
+                IntakeBackBottom.spin(reverse);
             }
             // The middle roller pulls the block in towards the hopper
             IntakeFrontBottom.spin(fwd);
@@ -89,11 +95,13 @@ void intakeMechanism(IntakeState intakeState) {
             // Every roller works to push the block upwards and to the front
             IntakeFrontTop.spin(fwd);
             IntakeFrontBottom.spin(fwd);
-            IntakeBack.spin(reverse);
+            IntakeBackBottom.spin(reverse);
+            IntakeBackTop.spin(reverse);
             if (noNeedForPneumatics == false && extended) {
                 // In theory retracts the back of the ramp to allow for
                 // outtaking
-                Pneumatics.set(false);
+                TopRampPneumatics.set(false);
+                extended = false;
             }
             Controller.Screen.clearLine(1);
             Controller.Screen.setCursor(1, 1);
@@ -106,13 +114,16 @@ void intakeMechanism(IntakeState intakeState) {
             // intake and move them upwards to be outtaked.
             IntakeFrontTop.spin(reverse);
             IntakeFrontBottom.spin(fwd);
+            Controller.Screen.clearLine(1);
+            Controller.Screen.setCursor(1, 1);
+            Controller.Screen.print("Outtaking to middle");
             break;
 
         case OUTTAKE_TO_BOTTOM:
             // The front-middle and back rollers work to pull blocks out of the hopper
             // and push them out of the intake through the bottom.
             IntakeFrontBottom.spin(reverse);
-            IntakeBack.spin(reverse);
+            IntakeBackBottom.spin(reverse);
             Controller.Screen.clearLine(1);
             Controller.Screen.setCursor(1, 1);
             Controller.Screen.print("Outtaking to bottom");
@@ -122,7 +133,8 @@ void intakeMechanism(IntakeState intakeState) {
             // Nothing happens and the motors stop moving
             IntakeFrontBottom.stop(brake);
             IntakeFrontTop.stop(brake);
-            IntakeBack.stop(brake);
+            IntakeBackBottom.stop(brake);
+            IntakeBackTop.stop(brake);
             Controller.Screen.clearLine(1);
             Controller.Screen.setCursor(1, 1);
             Controller.Screen.print("Neutral");

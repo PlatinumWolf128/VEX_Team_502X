@@ -35,7 +35,8 @@ void pre_auton(void) {
   // Setting the velocity of the intake motors.
   IntakeFrontBottom.setVelocity(intakeMotorSpeed, pct);
   IntakeFrontTop.setVelocity(intakeMotorSpeed, pct);
-  IntakeBack.setVelocity(intakeMotorSpeed, pct);
+  IntakeBackBottom.setVelocity(intakeMotorSpeed, pct);
+  IntakeBackTop.setVelocity(intakeMotorSpeed, pct);
 
 
 }
@@ -72,11 +73,19 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
+  
+  // Records whether or not the pneumatics piston at the bottom of the intake
+  // system is extended.
+  static bool extended = false;
+
+  IntakeState intakeState = NEUTRAL;
+
   while (1) {
 
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
+    // (Added by the VEX gods themselves)
 
     double leftJoystickFrontBackPosition = Controller.Axis3.position();
     double rightJoystickLeftRightPosition = Controller.Axis1.position();
@@ -89,7 +98,7 @@ void usercontrol(void) {
 
     robotDrive(leftJoystickFrontBackPosition, rightJoystickLeftRightPosition * turningSensitivity);
 
-    IntakeState intakeState = NEUTRAL;
+    //IntakeState intakeState = NEUTRAL;
     if (Controller.ButtonL1.pressing()) {
       intakeState = INTAKE;
     } else if (Controller.ButtonL2.pressing()) {
@@ -100,9 +109,17 @@ void usercontrol(void) {
       intakeState = OUTTAKE_TO_TOP;
     } else {
       intakeState = NEUTRAL;
-    }
-
+    } 
     intakeMechanism(intakeState);
+    
+    if (Controller.ButtonUp.pressing() && extended == false) {
+      BottomRampPneumatics.set(true);
+      extended = true;
+    } else if (Controller.ButtonDown.pressing() && extended == true) {
+      BottomRampPneumatics.set(false);
+      extended = false;
+    }
+    
 
     // Sleep the task for a short amount of time to prevent wasted resources.
     // (Added by the VEX gods themselves)

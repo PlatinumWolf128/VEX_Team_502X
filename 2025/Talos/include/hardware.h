@@ -6,6 +6,9 @@
 extern vex::brain Brain;
 extern vex::controller Controller;
 
+// The port number for the vision sensor, if we use it.
+const int VISION_SENSOR_PORT = vex::PORT16;
+
 // The port numbers for the motors on the left side of the drivetrain.
 const int LEFT_FRONT_PORT = vex::PORT7;
 const int LEFT_MIDDLE_PORT = vex::PORT15;
@@ -19,7 +22,8 @@ const int RIGHT_BACK_PORT = vex::PORT4;
 // The port numbers for the motors used in the intake mechanism.
 const int INTAKE_FRONT_BOTTOM_PORT = vex::PORT12;
 const int INTAKE_FRONT_TOP_PORT = vex::PORT13;
-const int INTAKE_BACK_PORT = vex::PORT14;
+const int INTAKE_BACK_BOTTOM_PORT = vex::PORT14;
+const int INTAKE_BACK_TOP_PORT = vex::PORT15;
 
 // The motors on the left side of the drivetrain.
 extern vex::motor LeftFront;
@@ -34,14 +38,16 @@ extern vex::motor RightBack;
 // The motors used in the intake mechanism.
 extern vex::motor IntakeFrontBottom;
 extern vex::motor IntakeFrontTop;
-extern vex::motor IntakeBack; 
+extern vex::motor IntakeBackBottom; 
+extern vex::motor IntakeBackTop;
 
 // These are the motor group objects for the drivetrain, each one representing
 // all the motors on one side of the drivetrain.
 extern vex::motor_group Left;
 extern vex::motor_group Right;
 
-extern vex::pneumatics Pneumatics;
+extern vex::pneumatics BottomRampPneumatics;
+extern vex::pneumatics TopRampPneumatics;
 
 // The speed at which all the motors in the intake subsystem move at,
 // represented as a percentage of the maximum possible speed.
@@ -49,7 +55,11 @@ const double intakeMotorSpeed = 100;
 
 // The possible states for the intake mechanism state machine and the variable
 // that represents them. 
-enum IntakeState {NEUTRAL, INTAKE, OUTTAKE_TO_TOP, OUTTAKE_TO_MIDDLE, OUTTAKE_TO_BOTTOM};
+enum IntakeState {NEUTRAL, 
+                  INTAKE, 
+                  OUTTAKE_TO_TOP, 
+                  OUTTAKE_TO_MIDDLE, 
+                  OUTTAKE_TO_BOTTOM};
 
 /**
  * Controls the drivetrain by adjusting the speed of the motors based on the
