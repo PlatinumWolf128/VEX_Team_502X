@@ -27,6 +27,7 @@ motor_group Right(RightFront, RightMiddle, RightBack);
 
 pneumatics BottomRampPneumatics(Brain.ThreeWirePort.C);
 pneumatics TopRampPneumatics(Brain.ThreeWirePort.D);
+pneumatics Extender(Brain.ThreeWirePort.E);
 
 void robotDrive(double frontBackSpeed, double turnSpeed) {
 
@@ -71,9 +72,13 @@ void intakeMechanism(IntakeState intakeState) {
     switch (intakeState) {
         
         case INTAKE:
-            if (noNeedForPneumatics) {
+            if (noNeedForPneumatics == false) {
                 // The back roller pulls the block into the hopper
-                IntakeBackBottom.spin(fwd);
+                IntakeBackTop.spin(reverse);
+                IntakeBackBottom.spin(reverse);
+                IntakeFrontTop.spin(fwd);
+                IntakeFrontBottom.spin(fwd);
+                
                 if (extended == false) {
                     // In theory extends the back of the ramp to allow for
                     // intaking
@@ -96,7 +101,7 @@ void intakeMechanism(IntakeState intakeState) {
             IntakeFrontTop.spin(fwd);
             IntakeFrontBottom.spin(fwd);
             IntakeBackBottom.spin(reverse);
-            IntakeBackTop.spin(reverse);
+            IntakeBackTop.spin(fwd);
             if (noNeedForPneumatics == false && extended) {
                 // In theory retracts the back of the ramp to allow for
                 // outtaking

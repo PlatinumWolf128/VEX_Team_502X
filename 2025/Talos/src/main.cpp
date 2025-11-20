@@ -59,6 +59,8 @@ void autonomous(void) {
   Brain.Screen.setCursor(0, 0);
   Brain.Screen.print("Hello World!");
 
+  Extender.set(true);
+
 }
 
 /*---------------------------------------------------------------------------*/
@@ -77,7 +79,8 @@ void usercontrol(void) {
   // Records whether or not the pneumatics piston at the bottom of the intake
   // system is extended.
   static bool extended = false;
-
+  static bool extendedTwo = true;
+  Extender.set(true);
   IntakeState intakeState = NEUTRAL;
 
   while (1) {
@@ -118,6 +121,12 @@ void usercontrol(void) {
     } else if (Controller.ButtonDown.pressing() && extended == true) {
       BottomRampPneumatics.set(false);
       extended = false;
+    } else if (Controller.ButtonLeft.pressing() && extendedTwo == true) {
+      Extender.set(false);
+      extendedTwo = false;
+    } else if (Controller.ButtonRight.pressing() && extendedTwo == false) {
+      Extender.set(true);
+      extendedTwo = true;
     }
     
 

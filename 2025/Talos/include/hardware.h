@@ -48,6 +48,7 @@ extern vex::motor_group Right;
 
 extern vex::pneumatics BottomRampPneumatics;
 extern vex::pneumatics TopRampPneumatics;
+extern vex::pneumatics Extender;
 
 // The speed at which all the motors in the intake subsystem move at,
 // represented as a percentage of the maximum possible speed.
