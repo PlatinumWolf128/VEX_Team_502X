@@ -20,7 +20,7 @@ motor RightBack(RIGHT_BACK_PORT);
 motor IntakeFrontBottom(INTAKE_FRONT_BOTTOM_PORT);
 motor IntakeFrontTop(INTAKE_FRONT_TOP_PORT);
 motor IntakeBackBottom(INTAKE_BACK_BOTTOM_PORT);
-motor IntakeBackTop(INTAKE_BACK_TOP_PORT, true);
+motor IntakeBackTop(INTAKE_BACK_TOP_PORT);
 
 motor_group Left(LeftFront, LeftMiddle, LeftBack);
 motor_group Right(RightFront, RightMiddle, RightBack);
@@ -74,7 +74,7 @@ void intakeMechanism(IntakeState intakeState) {
         case INTAKE:
             if (noNeedForPneumatics == false) {
                 // The back roller pulls the block into the hopper
-                IntakeBackTop.spin(reverse);
+                IntakeBackTop.spin(fwd);
                 IntakeBackBottom.spin(reverse);
                 IntakeFrontTop.spin(fwd);
                 IntakeFrontBottom.spin(fwd);
@@ -101,7 +101,7 @@ void intakeMechanism(IntakeState intakeState) {
             IntakeFrontTop.spin(fwd);
             IntakeFrontBottom.spin(fwd);
             IntakeBackBottom.spin(reverse);
-            IntakeBackTop.spin(fwd);
+            IntakeBackTop.spin(reverse);
             if (noNeedForPneumatics == false && extended) {
                 // In theory retracts the back of the ramp to allow for
                 // outtaking

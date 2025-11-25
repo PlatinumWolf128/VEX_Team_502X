@@ -10,7 +10,7 @@ extern vex::controller Controller;
 const int VISION_SENSOR_PORT = vex::PORT16;
 
 // The port numbers for the motors on the left side of the drivetrain.
-const int LEFT_FRONT_PORT = vex::PORT7;
+const int LEFT_FRONT_PORT = vex::PORT19;
 const int LEFT_MIDDLE_PORT = vex::PORT15;
 const int LEFT_BACK_PORT = vex::PORT17;
 
