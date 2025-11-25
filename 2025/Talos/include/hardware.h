@@ -23,7 +23,7 @@ const int RIGHT_BACK_PORT = vex::PORT4;
 const int INTAKE_FRONT_BOTTOM_PORT = vex::PORT12;
 const int INTAKE_FRONT_TOP_PORT = vex::PORT13;
 const int INTAKE_BACK_BOTTOM_PORT = vex::PORT14;
-const int INTAKE_BACK_TOP_PORT = vex::PORT15;
+const int INTAKE_BACK_TOP_PORT = vex::PORT17;
 
 // The motors on the left side of the drivetrain.
 extern vex::motor LeftFront;
