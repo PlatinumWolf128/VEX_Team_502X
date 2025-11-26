@@ -29,6 +29,10 @@ pneumatics BottomRampPneumatics(Brain.ThreeWirePort.C);
 pneumatics TopRampPneumatics(Brain.ThreeWirePort.D);
 pneumatics Extender(Brain.ThreeWirePort.E);
 
+vision::signature RED_SIG(1, 14677, 15277, 14977, 689, 1137, 913, 11743545, 0);
+vision::signature BLUE_SIG(2, -4013, -3535, -3774, 10967, 11503, 11235, 2244498, 0);
+optical OpticalSensor(PORT3, false);
+
 void robotDrive(double frontBackSpeed, double turnSpeed) {
 
     // The arcade-drive formula:
@@ -74,9 +78,9 @@ void intakeMechanism(IntakeState intakeState) {
         case INTAKE:
             if (noNeedForPneumatics == false) {
                 // The back roller pulls the block into the hopper
-                IntakeBackTop.spin(fwd);
+                IntakeBackTop.spin(reverse);
                 IntakeBackBottom.spin(reverse);
-                IntakeFrontTop.spin(fwd);
+                IntakeFrontTop.spin(reverse);
                 IntakeFrontBottom.spin(fwd);
                 
                 if (extended == false) {
@@ -152,5 +156,17 @@ void intakeMechanism(IntakeState intakeState) {
             break;
 
     }
+
+}
+
+int colorDetector() {
+    
+    if (OpticalSensor.color() == vex::color::red) {
+        return RED_DETECTED;
+    } else {
+        return NOTHING_DETECTED;
+    }
+
+    
 
 }

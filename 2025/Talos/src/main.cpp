@@ -38,6 +38,7 @@ void pre_auton(void) {
   IntakeBackBottom.setVelocity(intakeMotorSpeed, pct);
   IntakeBackTop.setVelocity(intakeMotorSpeed, pct);
 
+  OpticalSensor.setLightPower(100);
 
 }
 
@@ -78,8 +79,8 @@ void usercontrol(void) {
   
   // Records whether or not the pneumatics piston at the bottom of the intake
   // system is extended.
-  static bool extended = false;
-  static bool extendedTwo = true;
+  static bool lowerRampExtended = false;
+  static bool extenderExtended = true;
   Extender.set(true);
   IntakeState intakeState = NEUTRAL;
 
@@ -115,19 +116,23 @@ void usercontrol(void) {
     } 
     intakeMechanism(intakeState);
     
-    if (Controller.ButtonUp.pressing() && extended == false) {
+    if (Controller.ButtonUp.pressing() && lowerRampExtended == false) {
       BottomRampPneumatics.set(true);
-      extended = true;
-    } else if (Controller.ButtonDown.pressing() && extended == true) {
+      lowerRampExtended = true;
+    } else if (Controller.ButtonDown.pressing() && lowerRampExtended == true) {
       BottomRampPneumatics.set(false);
-      extended = false;
-    } else if (Controller.ButtonLeft.pressing() && extendedTwo == true) {
+      lowerRampExtended = false;
+    } else if (Controller.ButtonLeft.pressing() && extenderExtended == true) {
       Extender.set(false);
-      extendedTwo = false;
-    } else if (Controller.ButtonRight.pressing() && extendedTwo == false) {
+      extenderExtended = false;
+    } else if (Controller.ButtonRight.pressing() && extenderExtended == false) {
       Extender.set(true);
-      extendedTwo = true;
+      extenderExtended = true;
     }
+
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print(colorDetector());
     
 
     // Sleep the task for a short amount of time to prevent wasted resources.

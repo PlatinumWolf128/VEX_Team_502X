@@ -6,8 +6,8 @@
 extern vex::brain Brain;
 extern vex::controller Controller;
 
-// The port number for the vision sensor, if we use it.
-const int VISION_SENSOR_PORT = vex::PORT16;
+// The port number for the vision sensor.
+const int VISION_SENSOR_PORT = vex::PORT3;
 
 // The port numbers for the motors on the left side of the drivetrain.
 const int LEFT_FRONT_PORT = vex::PORT19;
@@ -46,9 +46,17 @@ extern vex::motor IntakeBackTop;
 extern vex::motor_group Left;
 extern vex::motor_group Right;
 
+// These are the solenoids that control our pneumatics systems.
 extern vex::pneumatics BottomRampPneumatics;
 extern vex::pneumatics TopRampPneumatics;
 extern vex::pneumatics Extender;
+
+// The optical sensor object.
+extern vex::optical OpticalSensor;
+
+const int NOTHING_DETECTED = 0;
+const int RED_DETECTED = 1;
+const int BLUE_DETECTED = 2;
 
 // The speed at which all the motors in the intake subsystem move at,
 // represented as a percentage of the maximum possible speed.
@@ -61,7 +69,7 @@ enum IntakeState {NEUTRAL,
                   OUTTAKE_TO_TOP, 
                   OUTTAKE_TO_MIDDLE, 
                   OUTTAKE_TO_BOTTOM};
-
+    
 /**
  * Controls the drivetrain by adjusting the speed of the motors based on the
  * values for forwards velocity and angular velocity that are passed in. The
@@ -104,5 +112,7 @@ void robotDrive(double frontBackSpeed, double turnSpeed);
  * 
  */
 void intakeMechanism(IntakeState intakeState);
+
+int colorDetector();
 
 #endif
