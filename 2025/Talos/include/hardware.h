@@ -3,6 +3,12 @@
 
 #include "vex.h"
 
+// This represents whether we are the red alliance or not during a match, which
+// is vital for the color-sorter to operate correctly. Make sure to double check
+// this before EVERY MATCH.
+const bool weAreTheRedAlliance = true;
+
+// The brain and controller objects.
 extern vex::brain Brain;
 extern vex::controller Controller;
 
@@ -54,6 +60,7 @@ extern vex::pneumatics Extender;
 // The optical sensor object.
 extern vex::optical OpticalSensor;
 
+// The possible return values for the colorDetector() function.
 const int NOTHING_DETECTED = 0;
 const int RED_DETECTED = 1;
 const int BLUE_DETECTED = 2;
@@ -95,11 +102,14 @@ void robotDrive(double frontBackSpeed, double turnSpeed);
  * Pressing button L1 causes the robot to be put into the "intake" state
  * and it intakes blocks. 
  * 
+ * Pressing button L2 puts the robot into the "outtake to the bottom" state, and
+ * it outtakes blocks from the bottom of the intake system.
+ * 
  * Pressing button R1 puts the robot in the "outtake to
  * the top" state and it outtakes blocks from the top of the intake system.
  * 
- * Pressing button R2 puts the robot into the "outtake to the bottom" state, and
- * it outtakes blocks from the bottom of the intake system.
+ * Pressing button R2 puts the robot into the "outtake to the middle" state, and
+ * it outtakes blocks from the middle of the intake system.
  * 
  * The states are listed in order of priority. If L1 and R1 are both pressed for
  * example, then the bot would still only be put into the "intake" state.
@@ -113,6 +123,19 @@ void robotDrive(double frontBackSpeed, double turnSpeed);
  */
 void intakeMechanism(IntakeState intakeState);
 
+/**
+ * Detects the color of the block entering the intake system, and reports it to
+ * the bot so that the block can be sorted.
+ * 
+ * @return
+ * Returns an integer representing the color of the block.
+ * 
+ * If 1 is returned, a red block was detected.
+ * 
+ * If 2 is returned, a blue block was detected.
+ * 
+ * If 0 is returned, neither red nor blue was detected. 
+ */
 int colorDetector();
 
 #endif

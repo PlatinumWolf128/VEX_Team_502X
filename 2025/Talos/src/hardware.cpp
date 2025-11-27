@@ -29,8 +29,6 @@ pneumatics BottomRampPneumatics(Brain.ThreeWirePort.C);
 pneumatics TopRampPneumatics(Brain.ThreeWirePort.D);
 pneumatics Extender(Brain.ThreeWirePort.E);
 
-vision::signature RED_SIG(1, 14677, 15277, 14977, 689, 1137, 913, 11743545, 0);
-vision::signature BLUE_SIG(2, -4013, -3535, -3774, 10967, 11503, 11235, 2244498, 0);
 optical OpticalSensor(PORT3, false);
 
 void robotDrive(double frontBackSpeed, double turnSpeed) {
@@ -81,7 +79,6 @@ void intakeMechanism(IntakeState intakeState) {
                 IntakeBackTop.spin(reverse);
                 IntakeBackBottom.spin(reverse);
                 IntakeFrontTop.spin(reverse);
-                IntakeFrontBottom.spin(fwd);
                 
                 if (extended == false) {
                     // In theory extends the back of the ramp to allow for
@@ -103,7 +100,6 @@ void intakeMechanism(IntakeState intakeState) {
         case OUTTAKE_TO_TOP:
             // Every roller works to push the block upwards and to the front
             IntakeFrontTop.spin(fwd);
-            IntakeFrontBottom.spin(fwd);
             IntakeBackBottom.spin(reverse);
             IntakeBackTop.spin(reverse);
             if (noNeedForPneumatics == false && extended) {
@@ -121,7 +117,6 @@ void intakeMechanism(IntakeState intakeState) {
             // The front rollers work to push blocks out through the center of
             // the intake system, while the back rollers do nothing.
             IntakeFrontTop.spin(reverse);
-            IntakeFrontBottom.spin(fwd);
             Controller.Screen.clearLine(1);
             Controller.Screen.setCursor(1, 1);
             Controller.Screen.print("Outtaking to middle");
@@ -139,7 +134,6 @@ void intakeMechanism(IntakeState intakeState) {
 
         case NEUTRAL:
             // Nothing happens and the motors stop moving
-            IntakeFrontBottom.stop(brake);
             IntakeFrontTop.stop(brake);
             IntakeBackBottom.stop(brake);
             IntakeBackTop.stop(brake);
@@ -163,10 +157,10 @@ int colorDetector() {
     
     if (OpticalSensor.color() == vex::color::red) {
         return RED_DETECTED;
+    } else if (OpticalSensor.color() == vex::color::blue) {
+        return BLUE_DETECTED;
     } else {
         return NOTHING_DETECTED;
     }
-
     
-
 }

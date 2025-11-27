@@ -38,6 +38,7 @@ void pre_auton(void) {
   IntakeBackBottom.setVelocity(intakeMotorSpeed, pct);
   IntakeBackTop.setVelocity(intakeMotorSpeed, pct);
 
+  // Turning on the LED light in the optical sensor.
   OpticalSensor.setLightPower(100);
 
 }
@@ -102,37 +103,66 @@ void usercontrol(void) {
 
     robotDrive(leftJoystickFrontBackPosition, rightJoystickLeftRightPosition * turningSensitivity);
 
-    //IntakeState intakeState = NEUTRAL;
+    // If we are intaking, the color-sorter code goes into action.
     if (Controller.ButtonL1.pressing()) {
-      intakeState = INTAKE;
+      
+      IntakeFrontBottom.spin(reverse);
+      
+      // Based on what color block was detected and whether or not that block
+      // belongs to our alliance, we decide what to do.
+      int detectedColor = colorDetector();
+      switch (detectedColor) {
+        case RED_DETECTED:
+          if (weAreTheRedAlliance) {
+            // The block is from our alliance and is going to the hopper.
+            intakeState = INTAKE;
+          } else {
+            // The block is from the opposing alliance and is being rejected.
+            intakeState = OUTTAKE_TO_MIDDLE;
+          }
+          break;
+        case BLUE_DETECTED:
+          if (weAreTheRedAlliance) {
+            // The block is from the opposing alliance and is being rejected.
+            intakeState = OUTTAKE_TO_MIDDLE;
+          } else {
+            // The block is from our alliance and is going to the hopper.
+            intakeState = INTAKE;
+          }
+          break;
+        case NOTHING_DETECTED:
+        default:
+          // https://pbs.twimg.com/media/GuK0lO7XoAEGtzf.jpg
+          intakeState = NEUTRAL;
+          break;
+      }
+
     } else if (Controller.ButtonL2.pressing()) {
       intakeState = OUTTAKE_TO_BOTTOM;
     } else if (Controller.ButtonR1.pressing()) {
-      intakeState = OUTTAKE_TO_MIDDLE;
-    } else if (Controller.ButtonR2.pressing()) {
       intakeState = OUTTAKE_TO_TOP;
-    } else {
-      intakeState = NEUTRAL;
-    } 
+    } else if (Controller.ButtonR2.pressing()) {
+      intakeState = OUTTAKE_TO_MIDDLE;
+    }
     intakeMechanism(intakeState);
     
+    // The code to control the lower ramp in the intake with pneumatics.
     if (Controller.ButtonUp.pressing() && lowerRampExtended == false) {
       BottomRampPneumatics.set(true);
       lowerRampExtended = true;
     } else if (Controller.ButtonDown.pressing() && lowerRampExtended == true) {
       BottomRampPneumatics.set(false);
       lowerRampExtended = false;
-    } else if (Controller.ButtonLeft.pressing() && extenderExtended == true) {
+    } 
+    
+    // The code to control the extender mechanism with pneumatics.
+    if (Controller.ButtonLeft.pressing() && extenderExtended == true) {
       Extender.set(false);
       extenderExtended = false;
     } else if (Controller.ButtonRight.pressing() && extenderExtended == false) {
       Extender.set(true);
       extenderExtended = true;
     }
-
-    Brain.Screen.clearScreen();
-    Brain.Screen.setCursor(1, 1);
-    Brain.Screen.print(colorDetector());
     
 
     // Sleep the task for a short amount of time to prevent wasted resources.
