@@ -83,7 +83,9 @@ void usercontrol(void) {
   static bool lowerRampExtended = false;
   static bool extenderExtended = true;
   Extender.set(true);
+  OpticalSensor.setLightPower(100);
   IntakeState intakeState = NEUTRAL;
+  int detectedColor = 0;
 
   while (1) {
 
@@ -106,11 +108,11 @@ void usercontrol(void) {
     // If we are intaking, the color-sorter code goes into action.
     if (Controller.ButtonL1.pressing()) {
       
-      IntakeFrontBottom.spin(reverse);
+      IntakeFrontBottom.spin(fwd);
       
       // Based on what color block was detected and whether or not that block
       // belongs to our alliance, we decide what to do.
-      int detectedColor = colorDetector();
+      detectedColor = colorDetector();
       switch (detectedColor) {
         case RED_DETECTED:
           if (weAreTheRedAlliance) {
@@ -131,7 +133,6 @@ void usercontrol(void) {
           }
           break;
         case NOTHING_DETECTED:
-        default:
           // https://pbs.twimg.com/media/GuK0lO7XoAEGtzf.jpg
           intakeState = NEUTRAL;
           break;
@@ -143,6 +144,9 @@ void usercontrol(void) {
       intakeState = OUTTAKE_TO_TOP;
     } else if (Controller.ButtonR2.pressing()) {
       intakeState = OUTTAKE_TO_MIDDLE;
+    } else {
+      intakeState = NEUTRAL;
+      IntakeFrontBottom.stop(brake);
     }
     intakeMechanism(intakeState);
     
@@ -164,6 +168,9 @@ void usercontrol(void) {
       extenderExtended = true;
     }
     
+      Brain.Screen.clearScreen();
+      Brain.Screen.setCursor(1, 1);
+      Brain.Screen.print(detectedColor);
 
     // Sleep the task for a short amount of time to prevent wasted resources.
     // (Added by the VEX gods themselves)

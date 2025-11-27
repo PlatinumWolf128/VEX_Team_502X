@@ -78,11 +78,10 @@ void intakeMechanism(IntakeState intakeState) {
                 // The back roller pulls the block into the hopper
                 IntakeBackTop.spin(reverse);
                 IntakeBackBottom.spin(reverse);
-                IntakeFrontTop.spin(reverse);
+                IntakeFrontTop.spin(fwd);
                 
                 if (extended == false) {
-                    // In theory extends the back of the ramp to allow for
-                    // intaking
+                    // Extends the back of the ramp to allow for intaking
                     TopRampPneumatics.set(true);
                     extended = true;
                 }
@@ -90,8 +89,6 @@ void intakeMechanism(IntakeState intakeState) {
                 // The back roller pushes the block upwards
                 IntakeBackBottom.spin(reverse);
             }
-            // The middle roller pulls the block in towards the hopper
-            IntakeFrontBottom.spin(fwd);
             Controller.Screen.clearLine(1);
             Controller.Screen.setCursor(1, 1);
             Controller.Screen.print("Intaking");
@@ -148,7 +145,6 @@ void intakeMechanism(IntakeState intakeState) {
             Controller.Screen.setCursor(1, 1);
             Controller.Screen.print("You shouldn't be here");
             break;
-
     }
 
 }
