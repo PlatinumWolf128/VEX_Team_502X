@@ -29,7 +29,7 @@ pneumatics BottomRampPneumatics(Brain.ThreeWirePort.C);
 pneumatics TopRampPneumatics(Brain.ThreeWirePort.D);
 pneumatics Extender(Brain.ThreeWirePort.E);
 
-optical OpticalSensor(PORT3, false);
+optical OpticalSensor(OPTICAL_SENSOR_PORT, false);
 
 void robotDrive(double frontBackSpeed, double turnSpeed) {
 
@@ -99,12 +99,17 @@ void intakeMechanism(IntakeState intakeState) {
             IntakeFrontTop.spin(fwd);
             IntakeBackBottom.spin(reverse);
             IntakeBackTop.spin(reverse);
+            //IntakeFrontBottom.spin(fwd);
             if (noNeedForPneumatics == false && extended) {
                 // In theory retracts the back of the ramp to allow for
                 // outtaking
                 TopRampPneumatics.set(false);
                 extended = false;
             }
+            // To anchor the bot better and cancel out recoil when scoring, the
+            // drivetrain holds in place and resists all movement.
+            Left.stop(hold);
+            Right.stop(hold);
             Controller.Screen.clearLine(1);
             Controller.Screen.setCursor(1, 1);
             Controller.Screen.print("Outtaking to top"); 
@@ -112,8 +117,9 @@ void intakeMechanism(IntakeState intakeState) {
 
         case OUTTAKE_TO_MIDDLE:
             // The front rollers work to push blocks out through the center of
-            // the intake system, while the back rollers do nothing.
+            // the intake system, while the bottom back roller helps move it up.
             IntakeFrontTop.spin(reverse);
+            IntakeBackBottom.spin(reverse);
             Controller.Screen.clearLine(1);
             Controller.Screen.setCursor(1, 1);
             Controller.Screen.print("Outtaking to middle");

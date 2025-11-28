@@ -39,6 +39,7 @@ void pre_auton(void) {
   IntakeBackTop.setVelocity(intakeMotorSpeed, pct);
 
   // Turning on the LED light in the optical sensor.
+  OpticalSensor.setLight(ledState::on);
   OpticalSensor.setLightPower(100);
 
 }
@@ -83,6 +84,7 @@ void usercontrol(void) {
   static bool lowerRampExtended = false;
   static bool extenderExtended = true;
   Extender.set(true);
+  OpticalSensor.setLight(ledState::on);
   OpticalSensor.setLightPower(100);
   IntakeState intakeState = NEUTRAL;
   int detectedColor = 0;
@@ -134,7 +136,6 @@ void usercontrol(void) {
           break;
         case NOTHING_DETECTED:
           // https://pbs.twimg.com/media/GuK0lO7XoAEGtzf.jpg
-          intakeState = NEUTRAL;
           break;
       }
 
@@ -142,6 +143,12 @@ void usercontrol(void) {
       intakeState = OUTTAKE_TO_BOTTOM;
     } else if (Controller.ButtonR1.pressing()) {
       intakeState = OUTTAKE_TO_TOP;
+      // When scoring in the long goal, retract the extender to let the bot get
+      // closer to the goal.
+      if (extenderExtended == true) {
+        Extender.set(false);
+        extenderExtended = false;
+      }
     } else if (Controller.ButtonR2.pressing()) {
       intakeState = OUTTAKE_TO_MIDDLE;
     } else {

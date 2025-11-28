@@ -12,8 +12,8 @@ const bool weAreTheRedAlliance = true;
 extern vex::brain Brain;
 extern vex::controller Controller;
 
-// The port number for the vision sensor.
-const int VISION_SENSOR_PORT = vex::PORT3;
+// The port number for the optical sensor.
+const int OPTICAL_SENSOR_PORT = vex::PORT21;
 
 // The port numbers for the motors on the left side of the drivetrain.
 const int LEFT_FRONT_PORT = vex::PORT19;
