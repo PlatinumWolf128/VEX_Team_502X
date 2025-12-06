@@ -63,44 +63,39 @@ void robotDrive(double frontBackSpeed, double turnSpeed) {
 
 void intakeMechanism(IntakeState intakeState) {
    
-    // Set FALSE if we decide to use pneumatics at the top of the intake system
-    // Set TRUE if we decide NOT to use pneumatics
-    bool noNeedForPneumatics = false;
-
     // If we're using pneumatics, this remembers whether or not the piston has
     // been extended to change the orientation of the ramp
     static bool extended = false;
     
     switch (intakeState) {
         
-        case INTAKE:
-            if (noNeedForPneumatics == false) {
-                // The back roller pulls the block into the hopper
-                IntakeBackTop.spin(reverse);
-                IntakeBackBottom.spin(reverse);
-                IntakeFrontTop.spin(fwd);
-                
-                if (extended == false) {
-                    // Extends the back of the ramp to allow for intaking
-                    TopRampPneumatics.set(true);
-                    extended = true;
-                }
-            } else {
-                // The back roller pushes the block upwards
-                IntakeBackBottom.spin(reverse);
+        case INTAKE_TO_TOP:
+            // The rollers pull the block into the upper hopper
+            IntakeBackTop.spin(reverse);
+            IntakeBackBottom.spin(reverse);
+            IntakeFrontTop.spin(fwd);               
+            if (extended == false) {
+                // Extends the back of the ramp to allow for intaking
+                TopRampPneumatics.set(true);
+                extended = true;
             }
             Controller.Screen.clearLine(1);
             Controller.Screen.setCursor(1, 1);
             Controller.Screen.print("Intaking");
             break;
 
+        case INTAKE_TO_BOTTOM:
+            // The bottom rollers push the block into the lower hopper.
+            IntakeBackBottom.spin(fwd);
+            break;
+            
         case OUTTAKE_TO_TOP:
             // Every roller works to push the block upwards and to the front
             IntakeFrontTop.spin(fwd);
             IntakeBackBottom.spin(reverse);
             IntakeBackTop.spin(reverse);
             //IntakeFrontBottom.spin(fwd);
-            if (noNeedForPneumatics == false && extended) {
+            if (extended) {
                 // In theory retracts the back of the ramp to allow for
                 // outtaking
                 TopRampPneumatics.set(false);

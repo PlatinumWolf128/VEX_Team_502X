@@ -58,11 +58,11 @@ void autonomous(void) {
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
-
-  Brain.Screen.setCursor(0, 0);
-  Brain.Screen.print("Hello World!");
-
   Extender.set(true);
+
+  robotDrive(25, -25);
+  wait(2000, msec);
+  robotDrive(0, 0);
 
 }
 
@@ -78,14 +78,21 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
+  // (Added by the VEX gods themselves)
   
   // Records whether or not the pneumatics piston at the bottom of the intake
   // system is extended.
   static bool lowerRampExtended = false;
-  static bool extenderExtended = true;
+
+  // Extends the extending roller at the front of the intake system and records
+  // that it has been extended.
   Extender.set(true);
+  static bool extenderExtended = true;
+
+  // Turns on the optical sensor's flashlight
   OpticalSensor.setLight(ledState::on);
   OpticalSensor.setLightPower(100);
+  
   IntakeState intakeState = NEUTRAL;
   int detectedColor = 0;
 
@@ -118,20 +125,20 @@ void usercontrol(void) {
       switch (detectedColor) {
         case RED_DETECTED:
           if (weAreTheRedAlliance) {
-            // The block is from our alliance and is going to the hopper.
-            intakeState = INTAKE;
-          } else {
-            // The block is from the opposing alliance and is being rejected.
+            // The block is from our alliance and is getting rejected.
             intakeState = OUTTAKE_TO_MIDDLE;
+          } else {
+            // The block is from the enemy alliance and is going to the upper hopper.
+            intakeState = INTAKE_TO_TOP;
           }
           break;
         case BLUE_DETECTED:
           if (weAreTheRedAlliance) {
-            // The block is from the opposing alliance and is being rejected.
-            intakeState = OUTTAKE_TO_MIDDLE;
+            // The block is from the enemy alliance and is going to the upper hopper.
+            intakeState = INTAKE_TO_TOP;
           } else {
-            // The block is from our alliance and is going to the hopper.
-            intakeState = INTAKE;
+            // The block is from our alliance and is getting rejected.
+            intakeState = OUTTAKE_TO_MIDDLE;
           }
           break;
         case NOTHING_DETECTED:
@@ -158,10 +165,10 @@ void usercontrol(void) {
     intakeMechanism(intakeState);
     
     // The code to control the lower ramp in the intake with pneumatics.
-    if (Controller.ButtonUp.pressing() && lowerRampExtended == false) {
+    if (Controller.ButtonY.pressing() && lowerRampExtended == false) {
       BottomRampPneumatics.set(true);
       lowerRampExtended = true;
-    } else if (Controller.ButtonDown.pressing() && lowerRampExtended == true) {
+    } else if (Controller.ButtonA.pressing() && lowerRampExtended == true) {
       BottomRampPneumatics.set(false);
       lowerRampExtended = false;
     } 
@@ -174,10 +181,6 @@ void usercontrol(void) {
       Extender.set(true);
       extenderExtended = true;
     }
-    
-      Brain.Screen.clearScreen();
-      Brain.Screen.setCursor(1, 1);
-      Brain.Screen.print(detectedColor);
 
     // Sleep the task for a short amount of time to prevent wasted resources.
     // (Added by the VEX gods themselves)

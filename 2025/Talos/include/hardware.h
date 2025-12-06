@@ -3,7 +3,7 @@
 
 #include "vex.h"
 
-// This represents whether we are the red alliance or not during a match, which
+// This represents whether or not we are the red alliance during a match, which
 // is vital for the color-sorter to operate correctly. Make sure to double check
 // this before EVERY MATCH.
 const bool weAreTheRedAlliance = true;
@@ -72,7 +72,8 @@ const double intakeMotorSpeed = 100;
 // The possible states for the intake mechanism state machine and the variable
 // that represents them. 
 enum IntakeState {NEUTRAL, 
-                  INTAKE, 
+                  INTAKE_TO_TOP,
+                  INTAKE_TO_BOTTOM, 
                   OUTTAKE_TO_TOP, 
                   OUTTAKE_TO_MIDDLE, 
                   OUTTAKE_TO_BOTTOM};
