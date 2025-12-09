@@ -103,8 +103,8 @@ void intakeMechanism(IntakeState intakeState) {
             }
             // To anchor the bot better and cancel out recoil when scoring, the
             // drivetrain holds in place and resists all movement.
-            Left.stop(hold);
-            Right.stop(hold);
+            //Left.stop(hold);
+            //Right.stop(hold);
             Controller.Screen.clearLine(1);
             Controller.Screen.setCursor(1, 1);
             Controller.Screen.print("Outtaking to top"); 

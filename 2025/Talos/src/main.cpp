@@ -60,8 +60,8 @@ void autonomous(void) {
   // ..........................................................................
   Extender.set(true);
 
-  robotDrive(25, -25);
-  wait(2000, msec);
+  robotDrive(25, 0);
+  wait(250, msec);
   robotDrive(0, 0);
 
 }
@@ -152,10 +152,10 @@ void usercontrol(void) {
       intakeState = OUTTAKE_TO_TOP;
       // When scoring in the long goal, retract the extender to let the bot get
       // closer to the goal.
-      if (extenderExtended == true) {
+      /*if (extenderExtended == true) {
         Extender.set(false);
         extenderExtended = false;
-      }
+      }*/
     } else if (Controller.ButtonR2.pressing()) {
       intakeState = OUTTAKE_TO_MIDDLE;
     } else {
