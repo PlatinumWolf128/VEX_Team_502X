@@ -24,9 +24,9 @@ motor BackRight(PORT19, ratio36_1, true);
 
 void drive(double forward, double strafe, double turn) {
 
-    if (abs(forward) <= 10) {forward = 0;}
-    if (abs(strafe) <= 10) {strafe = 0;}
-    if (abs(turn) <= 10) {turn = 0;}
+    if (fabs(forward) <= 10) {forward = 0;}
+    if (fabs(strafe) <= 10) {strafe = 0;}
+    if (fabs(turn) <= 10) {turn = 0;}
 
     // Holonomic drive formula
     double frontLeftSpeed = forward + strafe + turn;
@@ -40,10 +40,10 @@ void drive(double forward, double strafe, double turn) {
     backLeftSpeed = max(-100.0, min(backLeftSpeed, 100.0));
     backRightSpeed = max(-100.0, min(backRightSpeed, 100.0));
 
-    if (abs(frontLeftSpeed) <= 10) {FrontLeft.stop(brake);}
-    if (abs(frontRightSpeed) <= 10) {FrontRight.stop(brake);}
-    if (abs(backLeftSpeed) <= 10) {BackLeft.stop(brake);}
-    if (abs(frontRightSpeed) <= 10) {FrontRight.stop(brake);}
+    if (fabs(frontLeftSpeed) <= 10) {FrontLeft.stop(brake);}
+    if (fabs(frontRightSpeed) <= 10) {FrontRight.stop(brake);}
+    if (fabs(backLeftSpeed) <= 10) {BackLeft.stop(brake);}
+    if (fabs(frontRightSpeed) <= 10) {FrontRight.stop(brake);}
 
     FrontLeft.spin(fwd, frontLeftSpeed, velocityUnits::pct);
     FrontRight.spin(fwd, frontRightSpeed, velocityUnits::pct);
