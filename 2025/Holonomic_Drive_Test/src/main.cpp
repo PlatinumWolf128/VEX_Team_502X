@@ -22,11 +22,36 @@ motor FrontRight(PORT13, ratio36_1, true);
 motor BackLeft(PORT14, ratio36_1);
 motor BackRight(PORT19, ratio36_1, true);
 
+inertial Inertial(PORT7);
+
+const double DEADZONE = 4;
+const double kP = 0.4;
+const double kI = 0.005;
+const double kD = 0.3;
+
+double error;
+double previousError;
+double integral;
+double derivative;
+
+double headingMaintainer(double targetHeading, double currentHeading) {
+
+    error = targetHeading - currentHeading;
+    if (error > 180) error -= 360;
+    if (error < -180) error += 360;
+
+    integral = integral + error;
+    
+    derivative = error - previousError;
+    previousError = error; 
+
+    return ((error * kP) + (integral * kI) + (derivative * kD));
+}
+
 void drive(double forward, double strafe, double turn) {
 
-    if (fabs(forward) <= 10) {forward = 0;}
-    if (fabs(strafe) <= 10) {strafe = 0;}
-    if (fabs(turn) <= 10) {turn = 0;}
+    if (fabs(forward) <= DEADZONE)  forward = 0;
+    if (fabs(strafe) <= DEADZONE) strafe = 0;
 
     // Holonomic drive formula
     double frontLeftSpeed = forward + strafe + turn;
@@ -54,11 +79,23 @@ void drive(double forward, double strafe, double turn) {
 
 int main() {
    
+    Inertial.calibrate(2);
+    wait(2000, msec);
+    Inertial.setHeading(0, degrees);
+
     while(1) {
-        
+
         double forward = Controller.Axis3.position();
         double strafe = Controller.Axis4.position();
         double turn = Controller.Axis1.position();
+        double currentHeading = Inertial.heading(degrees);
+
+        if (fabs(turn) < DEADZONE) {
+            turn = headingMaintainer(0, currentHeading);
+        } else {
+            integral = 0;
+            previousError = 0;
+        }
 
         drive(forward, strafe, turn);
 
