@@ -12,22 +12,27 @@
 using namespace vex;
 using std::max;
 using std::min;
-using std::abs;
 
 brain MyMind;
 controller Controller;
 
-motor FrontLeft(PORT12, ratio6_1);
-motor FrontRight(PORT13, ratio6_1, true);
-motor BackLeft(PORT14, ratio6_1);
-motor BackRight(PORT19, ratio6_1, true);
+motor FrontLeft(PORT12, ratio6_1, true);
+motor FrontRight(PORT13, ratio6_1);
+motor BackLeft(PORT14, ratio6_1, true);
+motor BackRight(PORT19, ratio6_1);
 
 inertial Inertial(PORT7);
 
+enum AlignmentStatus {ALIGN_WITH_FIELD,
+                      INVERT,
+                      MAINTAIN_CURRENT,
+                      NEUTRAL};
+AlignmentStatus alignment;
+
 const double DEADZONE = 4;
-const double kP = 0.4;
-const double kI = 0.005;
-const double kD = 0.3;
+const double kP = 0.67;
+const double kI = 0.054;
+const double kD = 0.24;
 
 double error;
 double previousError;
@@ -47,6 +52,9 @@ double aligner(double targetHeading, double currentHeading) {
     if (error < -180) error += 360;
 
     integral = integral + error;
+    if (fabs(error) <= 30) integral = 0;
+    
+    if (fabs(error) <= 5) return 0;
     
     derivative = error - previousError;
     previousError = error; 
@@ -66,16 +74,16 @@ void drive(double forward, double strafe, double turn) {
     double backRightSpeed = forward + strafe - turn;
 
     // Capping the motor speeds between -100 and +100
-    frontLeftSpeed = max(-100.0, min(frontLeftSpeed, 100.0));
+   /* frontLeftSpeed = max(-100.0, min(frontLeftSpeed, 100.0));
     frontRightSpeed = max(-100.0, min(frontRightSpeed, 100.0));
     backLeftSpeed = max(-100.0, min(backLeftSpeed, 100.0));
-    backRightSpeed = max(-100.0, min(backRightSpeed, 100.0));
+    backRightSpeed = max(-100.0, min(backRightSpeed, 100.0));*/
 
     // This segment may not be needed. Do some testing with and without it.
-    if (fabs(frontLeftSpeed) <= 10) FrontLeft.stop(brake);
-    if (fabs(frontRightSpeed) <= 10) FrontRight.stop(brake);
-    if (fabs(backLeftSpeed) <= 10) BackLeft.stop(brake);
-    if (fabs(frontRightSpeed) <= 10) FrontRight.stop(brake);
+    if (fabs(frontLeftSpeed) <= 5) FrontLeft.stop(brake);
+    if (fabs(frontRightSpeed) <= 5) FrontRight.stop(brake);
+    if (fabs(backLeftSpeed) <= 5) BackLeft.stop(brake);
+    if (fabs(backRightSpeed) <= 5) BackRight.stop(brake);
 
     FrontLeft.spin(fwd, frontLeftSpeed, velocityUnits::pct);
     FrontRight.spin(fwd, frontRightSpeed, velocityUnits::pct);
@@ -90,9 +98,11 @@ int main() {
     wait(2000, msec);
     Inertial.setHeading(0, degrees);
 
-    bool alignWithField = false;
+   // bool alignWithField = true;
     bool previousUpPressed = false;
     bool invert = false;
+
+    alignment = NEUTRAL;
 
     double forward = 0;
     double strafe = 0;
@@ -101,26 +111,17 @@ int main() {
 
     while(1) {
 
-        if (invert) {
-            forward = -Controller.Axis3.position();
-            strafe = -Controller.Axis4.position();
-            turn = -Controller.Axis1.position();
-        } else {
-            forward = Controller.Axis3.position();
-            strafe = Controller.Axis4.position();
-            turn = Controller.Axis1.position();
-        }
+        forward = Controller.Axis3.position();
+        strafe = Controller.Axis4.position();
+        turn = Controller.Axis1.position();
+        
         double currentHeading = Inertial.heading(degrees);
 
         // Toggle alignment mode if the up button is pressed.
-        if (Controller.ButtonUp.pressing() == true && previousUpPressed == false) {
-            alignWithField = !alignWithField;
-            invert = false;
-        }
-
-        // If the down button is pressed, invert the controls.
-        if (Controller.ButtonDown.pressing() == true) {
-            invert = true;
+        if (Controller.ButtonUp.pressing() == true) {
+            alignment = ALIGN_WITH_FIELD;
+        } else if (Controller.ButtonDown.pressing() == true) {
+            alignment = INVERT;
         }
         
         // If the right joystick (used for rotating) is moved, then the bot
@@ -128,22 +129,32 @@ int main() {
         // the up button is toggled, the bot snaps into auto-align mode.
         if (fabs(turn) > DEADZONE) {
             // The right joystick is moved
-            alignWithField = false;
-            invert = false;
+            alignment = NEUTRAL;
             integral = 0;
             previousError = 0;
-            targetHeading = currentHeading;
-        } else if ((fabs(turn) < DEADZONE) && alignWithField == true) {
-            // The joystick is not being moved and the bot is in alignment mode
-            targetHeading = 0;
-        } else if ((fabs(turn) < DEADZONE) && invert == true) {
-            // The joystick is not being moved and the bot is in inverted mode
-            targetHeading = 180;
-        }
+        } 
+
+        switch (alignment) {
+                case ALIGN_WITH_FIELD:
+                    targetHeading = 0;
+                    turn = aligner(targetHeading, currentHeading);
+                    break;
+                case INVERT:
+                    targetHeading = 180;
+                    forward = -forward;
+                    strafe = -strafe;
+                    turn = aligner(targetHeading, currentHeading);
+                    break;
+                case MAINTAIN_CURRENT:
+                    targetHeading = currentHeading;
+                    turn = aligner(targetHeading, currentHeading);
+                    break;
+                case NEUTRAL:
+                    break;
+            }
 
         previousUpPressed = Controller.ButtonUp.pressing();
 
-        turn = aligner(targetHeading, currentHeading);
         drive(forward, strafe, turn);
 
         // Allow other tasks to run
