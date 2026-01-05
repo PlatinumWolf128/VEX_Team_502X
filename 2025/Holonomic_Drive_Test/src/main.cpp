@@ -7,6 +7,7 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 #include "vex.h"
+#include <cmath>
 #include <algorithm>
 
 using namespace vex;
@@ -30,7 +31,7 @@ enum AlignmentStatus {ALIGN_WITH_FIELD,
 AlignmentStatus alignment;
 
 const double DEADZONE = 4;
-const double kP = 0.67;
+const double kP = 0.57;
 const double kI = 0.054;
 const double kD = 0.24;
 
@@ -100,7 +101,7 @@ int main() {
 
    // bool alignWithField = true;
     bool previousUpPressed = false;
-    bool invert = false;
+    //bool invert = false;
 
     alignment = NEUTRAL;
 
@@ -132,7 +133,12 @@ int main() {
             alignment = NEUTRAL;
             integral = 0;
             previousError = 0;
-        } 
+        }
+        
+        if (Controller.ButtonB.pressing()) {
+            Inertial.calibrate();
+            wait(2000, msec);
+        }
 
         switch (alignment) {
                 case ALIGN_WITH_FIELD:
