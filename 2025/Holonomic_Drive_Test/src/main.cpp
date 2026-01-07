@@ -24,21 +24,24 @@ motor BackRight(PORT19, ratio6_1);
 
 inertial Inertial(PORT7);
 
-enum AlignmentStatus {ALIGN_WITH_FIELD,
-                      INVERT,
+enum AlignmentStatus {ALIGN_WITH_NORTH,
+                      ALIGN_WITH_SOUTH,
                       MAINTAIN_CURRENT,
                       NEUTRAL};
 AlignmentStatus alignment;
 
 const double DEADZONE = 4;
-const double kP = 0.57;
-const double kI = 0.054;
-const double kD = 0.24;
+const double kP = 0.58;
+const double kI = 0.014;
+const double kD = 0.27;
+const double DEGREES_TO_RAD = M_PI/180;
 
 double error;
 double previousError;
 double integral;
 double derivative;
+
+bool holdPosition = false;
 
 double aligner(double targetHeading, double currentHeading) {
 
@@ -53,7 +56,7 @@ double aligner(double targetHeading, double currentHeading) {
     if (error < -180) error += 360;
 
     integral = integral + error;
-    if (fabs(error) <= 30) integral = 0;
+    if (fabs(error) <= 10) integral = 0;
     
     if (fabs(error) <= 5) return 0;
     
@@ -63,10 +66,13 @@ double aligner(double targetHeading, double currentHeading) {
     return ((error * kP) + (integral * kI) + (derivative * kD));
 }
 
-void drive(double forward, double strafe, double turn) {
+void drive(double y, double x, double turn, double currentHeading) {
 
-    if (fabs(forward) <= DEADZONE)  forward = 0;
-    if (fabs(strafe) <= DEADZONE) strafe = 0;
+    if (fabs(y) <= DEADZONE)  y = 0;
+    if (fabs(x) <= DEADZONE) x = 0;
+
+    double strafe = (x * cos(currentHeading * DEGREES_TO_RAD)) - (y * sin(currentHeading * DEGREES_TO_RAD));
+    double forward = (x * sin(currentHeading * DEGREES_TO_RAD)) + (y * cos(currentHeading * DEGREES_TO_RAD));
 
     // Holonomic drive formula
     double frontLeftSpeed = forward + strafe + turn;
@@ -80,16 +86,23 @@ void drive(double forward, double strafe, double turn) {
     backLeftSpeed = max(-100.0, min(backLeftSpeed, 100.0));
     backRightSpeed = max(-100.0, min(backRightSpeed, 100.0));*/
 
-    // This segment may not be needed. Do some testing with and without it.
-    if (fabs(frontLeftSpeed) <= 5) FrontLeft.stop(brake);
-    if (fabs(frontRightSpeed) <= 5) FrontRight.stop(brake);
-    if (fabs(backLeftSpeed) <= 5) BackLeft.stop(brake);
-    if (fabs(backRightSpeed) <= 5) BackRight.stop(brake);
+    // If the motor speeds are zero, apply the brakes.
+    if (fabs(frontLeftSpeed) == 0) FrontLeft.stop(brake);
+    if (fabs(frontRightSpeed) == 0) FrontRight.stop(brake);
+    if (fabs(backLeftSpeed) == 0) BackLeft.stop(brake);
+    if (fabs(backRightSpeed) == 0) BackRight.stop(brake);
 
-    FrontLeft.spin(fwd, frontLeftSpeed, velocityUnits::pct);
-    FrontRight.spin(fwd, frontRightSpeed, velocityUnits::pct);
-    BackLeft.spin(fwd, backLeftSpeed, velocityUnits::pct);
-    BackRight.spin(fwd, backRightSpeed, velocityUnits::pct);
+    if (holdPosition) {
+        FrontLeft.stop(vex::brakeType::hold);
+        FrontRight.stop(vex::brakeType::hold);
+        BackLeft.stop(vex::brakeType::hold);
+        BackRight.stop(vex::brakeType::hold);
+    } else {
+        FrontLeft.spin(fwd, frontLeftSpeed, velocityUnits::pct);
+        FrontRight.spin(fwd, frontRightSpeed, velocityUnits::pct);
+        BackLeft.spin(fwd, backLeftSpeed, velocityUnits::pct);
+        BackRight.spin(fwd, backRightSpeed, velocityUnits::pct);
+    }
 
 }
 
@@ -98,10 +111,6 @@ int main() {
     Inertial.calibrate(2);
     wait(2000, msec);
     Inertial.setHeading(0, degrees);
-
-   // bool alignWithField = true;
-    bool previousUpPressed = false;
-    //bool invert = false;
 
     alignment = NEUTRAL;
 
@@ -119,49 +128,51 @@ int main() {
         double currentHeading = Inertial.heading(degrees);
 
         // Toggle alignment mode if the up button is pressed.
-        if (Controller.ButtonUp.pressing() == true) {
-            alignment = ALIGN_WITH_FIELD;
-        } else if (Controller.ButtonDown.pressing() == true) {
-            alignment = INVERT;
-        }
-        
-        // If the right joystick (used for rotating) is moved, then the bot
-        // snaps out of auto-alignment mode. If the joystick is not moved and
-        // the up button is toggled, the bot snaps into auto-align mode.
-        if (fabs(turn) > DEADZONE) {
-            // The right joystick is moved
+        if (Controller.ButtonUp.pressing()) {
+            alignment = ALIGN_WITH_NORTH;
+        } else if (Controller.ButtonDown.pressing()) {
+            alignment = ALIGN_WITH_SOUTH;
+        } else if (Controller.ButtonLeft.pressing()) {
+            targetHeading = currentHeading;
+            alignment = MAINTAIN_CURRENT;
+        } else if (fabs(turn) > DEADZONE) {
+            // If the right joystick (used for rotating) is moved, then the bot
+            // snaps out of auto-alignment mode. If the joystick is not moved and
+            // the up button is toggled, the bot snaps into auto-align mode.
             alignment = NEUTRAL;
             integral = 0;
             previousError = 0;
-        }
+        } 
         
+        //Recalibrate if necessary
         if (Controller.ButtonB.pressing()) {
-            Inertial.calibrate();
-            wait(2000, msec);
+            Inertial.setHeading(0, degrees);
+            wait(20, msec);
         }
 
         switch (alignment) {
-                case ALIGN_WITH_FIELD:
+                case ALIGN_WITH_NORTH:
                     targetHeading = 0;
                     turn = aligner(targetHeading, currentHeading);
                     break;
-                case INVERT:
+                case ALIGN_WITH_SOUTH:
                     targetHeading = 180;
-                    forward = -forward;
-                    strafe = -strafe;
                     turn = aligner(targetHeading, currentHeading);
                     break;
                 case MAINTAIN_CURRENT:
-                    targetHeading = currentHeading;
                     turn = aligner(targetHeading, currentHeading);
                     break;
                 case NEUTRAL:
                     break;
             }
 
-        previousUpPressed = Controller.ButtonUp.pressing();
-
-        drive(forward, strafe, turn);
+        while (Controller.ButtonY.pressing()) {
+            FrontLeft.stop(vex::brakeType::hold);
+            FrontRight.stop(vex::brakeType::hold);
+            BackLeft.stop(vex::brakeType::hold);
+            BackRight.stop(vex::brakeType::hold);
+        }
+        drive(forward, strafe, turn, currentHeading);
 
         // Allow other tasks to run
         this_thread::sleep_for(10);
