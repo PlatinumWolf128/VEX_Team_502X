@@ -30,9 +30,10 @@ competition Competition;
 void pre_auton(void) {
 
   // All activities that occur before the competition starts
-  // Example: clearing encoders, setting servo positions, ...\
+  // Example: clearing encoders, setting servo positions, ...
 
   Inertial.calibrate(3);
+  Inertial.setHeading(0, degrees);
 
 }
 
@@ -66,6 +67,8 @@ void autonomous(void) {
 void usercontrol(void) {
   // User control code here, inside the loop
   double targetHeading = 0;
+  AlignmentStatus alignment = NEUTRAL;
+  bool robotOriented = false;
 
   while (1) {
     
@@ -73,11 +76,59 @@ void usercontrol(void) {
     double strafeVelocity = Controller.Axis4.position();
     double turnVelocity = Controller.Axis1.position();
 
+    double currentHeading = Inertial.heading();
+
     if (Controller.ButtonUp.pressing()) {
-      targetHeading = 0;
+      // ALign to "North" (the position you calibrated to)
+      alignment = NORTH;
+    } else if (Controller.ButtonDown.pressing()) {
+      // Align to "South" (the opposite of North)
+      alignment = SOUTH;
+    } else if (Controller.ButtonRight.pressing()) {
+      // Rotate the target heading 45 degrees clockwise.
+      targetHeading += 45;
+      alignment = CUSTOM;
+    } else if (Controller.ButtonLeft.pressing()) {
+      // Rotate the target heading 45 degrees counterclockwise.
+      targetHeading -= 45;
+      alignment = CUSTOM;
+    } else if (Controller.ButtonY.pressing()) {
+      // Set the current heading as the target to align to.
+      alignment = MAINTAIN_CURRENT;
+      targetHeading = currentHeading;
+    } else if (Controller.ButtonX.pressing()) {
+      robotOriented = !robotOriented;
+      wait(100, msec);
+    } else if (fabs(turnVelocity) >= DEADZONE) {
+      alignment = NEUTRAL;
     }
 
+    switch (alignment) {
+      case NORTH:
+        targetHeading = 0;
+        turnVelocity = aligner(targetHeading);
+        break;
+      case SOUTH:
+        targetHeading = 180;
+        turnVelocity = aligner(targetHeading);
+        break;
+      case CUSTOM:
+        turnVelocity = aligner(targetHeading);
+        break;
+      case MAINTAIN_CURRENT:
+        turnVelocity = aligner(targetHeading);
+        break;
+      case NEUTRAL:
+        integral = 0;
+        previousError = 0;
+        break;
+    }
 
+    while (Controller.ButtonB.pressing()) {
+      AllDriveMotors.stop(hold);
+    }
+
+    drive(forwardVelocity, strafeVelocity, turnVelocity, robotOriented);
 
     // Sleep the task for a short amount of time to
     // prevent wasted resources.

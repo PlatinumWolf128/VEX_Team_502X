@@ -22,6 +22,9 @@ extern motor FrontRight;
 extern motor BackLeft;
 extern motor BackRight;
 
+// A motor group with all the drive motors.
+extern motor_group AllDriveMotors;
+
 // The sensors.
 extern inertial Inertial;
 
@@ -33,36 +36,32 @@ extern inertial Inertial;
 // act as position zero.
 const double DEADZONE = 3;
 
+const double DEG_TO_RAD = M_PI/180;
+
 // The possible states for the drivetrain's alignment system.
 enum AlignmentStatus {NORTH,
                       SOUTH,
+                      CUSTOM,
                       MAINTAIN_CURRENT,
                       NEUTRAL};
 
-// The other PID values for the aligner() function. 
-double error = 0;
-double previousError = 0;
-double integral = 0;
-double derivative = 0;
-
-/**
- * Controls the drivetrain using the holonomic drive formula and the values for
- * forwards/backwards velocity, strafing velocity, and angular velocity that are
- * passed in. 
- */
-void robotOrientedDrive(double forward, double strafe, double turn);
+extern double error;
+extern double previousError;
+extern double integral;
 
 /**
  * Controls the drivetrain using the holonomic drive formula and the values for
  * forwards/backwards velocity, strafing velocity, and angular velocity that are
  * passed in. 
  * 
- * Unlike the other drive function however, this also takes a heading value and
- * drives in such a way so that no matter which way the robot is facing, if the
- * driver pushes the joystick forward, the robot drives forwards relative to the
- * driver.
+ * However, this also has a mode where it uses the current heading of the bot
+ * and drives in such a way so that no matter which way the robot is facing, if
+ * the driver pushes the joystick forward, the robot drives forwards relative to
+ * the driver.
+ * 
  */
-void fieldOrientedDrive(double forward, double strafe, double turn, double currentHeading);
+void drive(double forward, double strafe, double turn, bool robotOrientedDrive);
+
 
 /**
  * Uses PID and an inertial sensor reading to return a turn value. This turn
