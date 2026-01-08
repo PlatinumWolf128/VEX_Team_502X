@@ -8,6 +8,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
+#include "hardware.h"
 
 using namespace vex;
 
@@ -29,7 +30,10 @@ competition Competition;
 void pre_auton(void) {
 
   // All activities that occur before the competition starts
-  // Example: clearing encoders, setting servo positions, ...
+  // Example: clearing encoders, setting servo positions, ...\
+
+  Inertial.calibrate(3);
+
 }
 
 /*---------------------------------------------------------------------------*/
@@ -43,9 +47,10 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
-  // ..........................................................................
-  // Insert autonomous user code here.
-  // ..........................................................................
+  
+  Inertial.setHeading(0, degrees);
+
+
 }
 
 /*---------------------------------------------------------------------------*/
@@ -60,18 +65,23 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
+  double targetHeading = 0;
+
   while (1) {
-    // This is the main execution loop for the user control program.
-    // Each time through the loop your program should update motor + servo
-    // values based on feedback from the joysticks.
+    
+    double forwardVelocity = Controller.Axis3.position();
+    double strafeVelocity = Controller.Axis4.position();
+    double turnVelocity = Controller.Axis1.position();
 
-    // ........................................................................
-    // Insert user code here. This is where you use the joystick values to
-    // update your motors, etc.
-    // ........................................................................
+    if (Controller.ButtonUp.pressing()) {
+      targetHeading = 0;
+    }
 
-    wait(20, msec); // Sleep the task for a short amount of time to
-                    // prevent wasted resources.
+
+
+    // Sleep the task for a short amount of time to
+    // prevent wasted resources.
+    wait(20, msec); 
   }
 }
 
