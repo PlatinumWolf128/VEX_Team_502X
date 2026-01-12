@@ -13,6 +13,10 @@ const int FRONT_RIGHT_PORT = PORT13;
 const int BACK_LEFT_PORT = PORT14;
 const int BACK_RIGHT_PORT = PORT19;
 
+// The motor ports for the front flex-wheels in the intake.
+const int LEFT_FLEXWHEEL_PORT = PORT8;
+const int RIGHT_FLEXWHEEL_PORT = PORT5;
+
 // The port for all the sensors.
 const int INERTIAL_SENSOR_PORT = PORT7;
 
@@ -24,6 +28,13 @@ extern motor BackRight;
 
 // A motor group with all the drive motors.
 extern motor_group AllDriveMotors;
+
+// The motors for the front flex-wheels in the intake.
+extern motor LeftFlexwheel;
+extern motor RightFlexwheel;
+
+// A motor group with the flexwheel motors.
+extern motor_group Flexhweels;
 
 // The sensors.
 extern inertial Inertial;

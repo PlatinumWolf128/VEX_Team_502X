@@ -128,6 +128,15 @@ void usercontrol(void) {
       AllDriveMotors.stop(hold);
     }
 
+    // TODO: Make an intake() function and put this in there
+    if (Controller.ButtonL1.pressing()) {
+      Flexhweels.spin(fwd, 100, pct);
+    } else if (Controller.ButtonL2.pressing()) {
+      Flexhweels.spin(reverse, 100, pct);
+    } else {
+      Flexhweels.stop(brake);
+    }
+
     drive(forwardVelocity, strafeVelocity, turnVelocity, robotOriented);
 
     // Sleep the task for a short amount of time to

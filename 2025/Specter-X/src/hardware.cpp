@@ -15,6 +15,13 @@ motor BackRight(BACK_RIGHT_PORT, ratio6_1);
 // The motor group for all the drive motors.
 motor_group AllDriveMotors(FrontLeft, FrontRight, BackLeft, BackRight);
 
+// The motors for the front flex-wheels in the intake.
+motor LeftFlexwheel(LEFT_FLEXWHEEL_PORT);
+motor RightFlexwheel(RIGHT_FLEXWHEEL_PORT, true);
+
+// The motor group for the flexwheel motors.
+motor_group Flexhweels(LeftFlexwheel, RightFlexwheel);
+
 // All the sensors.
 inertial Inertial(INERTIAL_SENSOR_PORT);
 
