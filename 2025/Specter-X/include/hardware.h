@@ -38,6 +38,10 @@ extern motor_group Flexhweels;
 
 // The sensors.
 extern inertial Inertial;
+extern optical Optical;
+
+// The solenoids for the pneumatics systems.
+extern pneumatics LiftPneumatics;
 
 // This is the deadzone value. If the joystick's position along an axis is less
 // than or equal to this value, then a value of zero is returned for that axis
@@ -47,15 +51,17 @@ extern inertial Inertial;
 // act as position zero.
 const double DEADZONE = 3;
 
+// Ratio for converting from degrees to radians.
 const double DEG_TO_RAD = M_PI/180;
 
 // The possible states for the drivetrain's alignment system.
-enum AlignmentStatus {NORTH,
-                      SOUTH,
-                      CUSTOM,
-                      MAINTAIN_CURRENT,
-                      NEUTRAL};
+enum AlignmentState {NORTH,
+                     SOUTH,
+                     CUSTOM,
+                     MAINTAIN_CURRENT,
+                     NEUTRAL};
 
+// Some values needed for the aligner() function's PID
 extern double error;
 extern double previousError;
 extern double integral;
@@ -88,6 +94,8 @@ void drive(double forward, double strafe, double turn, bool robotOrientedDrive);
  *  
  */
 double aligner(double targetHeading);
+
+void intake(double intakeVelocity);
 
 
 #endif

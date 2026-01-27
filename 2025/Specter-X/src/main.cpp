@@ -67,8 +67,10 @@ void autonomous(void) {
 void usercontrol(void) {
   // User control code here, inside the loop
   double targetHeading = 0;
-  AlignmentStatus alignment = NEUTRAL;
   bool robotOriented = false;
+  AlignmentState alignment = NORTH;
+
+  double intakeVelocity = 0;
 
   while (1) {
     
@@ -76,7 +78,7 @@ void usercontrol(void) {
     double strafeVelocity = Controller.Axis4.position();
     double turnVelocity = Controller.Axis1.position();
 
-    double currentHeading = Inertial.heading();
+    double currentHeading = Inertial.heading(degrees);
 
     if (Controller.ButtonUp.pressing()) {
       // ALign to "North" (the position you calibrated to)
@@ -97,9 +99,11 @@ void usercontrol(void) {
       alignment = MAINTAIN_CURRENT;
       targetHeading = currentHeading;
     } else if (Controller.ButtonX.pressing()) {
+      // Toggle whether or not the drivetrain is robot-oriented.
       robotOriented = !robotOriented;
       wait(100, msec);
     } else if (fabs(turnVelocity) >= DEADZONE) {
+      // Quit alignment mode.
       alignment = NEUTRAL;
     }
 
@@ -128,16 +132,24 @@ void usercontrol(void) {
       AllDriveMotors.stop(hold);
     }
 
-    // TODO: Make an intake() function and put this in there
     if (Controller.ButtonL1.pressing()) {
-      Flexhweels.spin(fwd, 100, pct);
-    } else if (Controller.ButtonL2.pressing()) {
-      Flexhweels.spin(reverse, 100, pct);
+      intakeVelocity = 100;
+    } else if (Controller.ButtonR1.pressing()) {
+      intakeVelocity = -100;
     } else {
-      Flexhweels.stop(brake);
+      intakeVelocity = 0;
     }
 
+    if (Controller.ButtonL2.pressing()) {
+      // Raise the intake
+      LiftPneumatics.set(true);
+    } else if (Controller.ButtonR2.pressing()) {
+      // Lower the intake
+      LiftPneumatics.set(false);
+    } 
+
     drive(forwardVelocity, strafeVelocity, turnVelocity, robotOriented);
+    intake(intakeVelocity);
 
     // Sleep the task for a short amount of time to
     // prevent wasted resources.

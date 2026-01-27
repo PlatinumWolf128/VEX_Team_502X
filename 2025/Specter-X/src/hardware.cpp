@@ -25,6 +25,9 @@ motor_group Flexhweels(LeftFlexwheel, RightFlexwheel);
 // All the sensors.
 inertial Inertial(INERTIAL_SENSOR_PORT);
 
+// The pneumatics solenoids.
+pneumatics LiftPneumatics(Brain.ThreeWirePort.C);
+
 double error = 0;
 double previousError = 0;
 double integral = 0;
@@ -97,5 +100,19 @@ void drive(double forward, double strafe, double turn, bool robotOrientedDrive) 
     FrontRight.spin(fwd, frontRightSpeed, velocityUnits::pct);
     BackLeft.spin(fwd, backLeftSpeed, velocityUnits::pct);
     BackRight.spin(fwd, backRightSpeed, velocityUnits::pct);
+
+}
+
+void intake(double intakeVelocity) {
+
+    if (intakeVelocity == 0) {
+        // If intakeVelocity is 0, stop the motors
+        Flexhweels.stop(brake);
+    } else {
+        // If intakeVelocity is +100, then the blocks get intaked.
+        // If intakeVelocity is -100, then the blocks get outtaked.
+        Flexhweels.spin(fwd, intakeVelocity, pct);
+    }
+
 
 }
