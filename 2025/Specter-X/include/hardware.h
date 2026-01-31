@@ -11,14 +11,18 @@ extern controller Controller;
 const int FRONT_LEFT_PORT = PORT12; 
 const int FRONT_RIGHT_PORT = PORT13;
 const int BACK_LEFT_PORT = PORT14;
-const int BACK_RIGHT_PORT = PORT19;
+const int BACK_RIGHT_PORT = PORT15;
 
 // The motor ports for the front flex-wheels in the intake.
-const int LEFT_FLEXWHEEL_PORT = PORT8;
-const int RIGHT_FLEXWHEEL_PORT = PORT5;
+const int LEFT_FLEXWHEEL_PORT = PORT3;
+const int RIGHT_FLEXWHEEL_PORT = PORT4;
+const int LOWER_INTAKE_PORT = PORT5;
+const int UPPER_INTAKE_LEFT = PORT7;
+const int UPPER_INTAKE_RIGHT = PORT8;
+const int INTAKE_EXIT_PORT = PORT11;
 
 // The port for all the sensors.
-const int INERTIAL_SENSOR_PORT = PORT7;
+const int INERTIAL_SENSOR_PORT = PORT19;
 
 // The motors for the drivetrain.
 extern motor FrontLeft;
@@ -30,11 +34,15 @@ extern motor BackRight;
 extern motor_group AllDriveMotors;
 
 // The motors for the front flex-wheels in the intake.
-extern motor LeftFlexwheel;
-extern motor RightFlexwheel;
+extern motor FrontLeftFlexwheel;
+extern motor FrontRightFlexwheel;
+extern motor LowerIntake;
+extern motor UpperIntakeLeft;
+extern motor UpperIntakeRight;
+extern motor IntakeExit;
 
-// A motor group with the flexwheel motors.
-extern motor_group Flexhweels;
+// A motor group with all of the intake system motors.
+extern motor_group IntakeMotors;
 
 // The sensors.
 extern inertial Inertial;
@@ -96,6 +104,8 @@ void drive(double forward, double strafe, double turn, bool robotOrientedDrive);
 double aligner(double targetHeading);
 
 void intake(double intakeVelocity);
+
+double distanceToTime(double distanceInInches);
 
 
 #endif

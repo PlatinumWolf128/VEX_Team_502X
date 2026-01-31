@@ -50,7 +50,59 @@ void pre_auton(void) {
 void autonomous(void) {
   
   Inertial.setHeading(0, degrees);
+  int timeElapsed = 0;
 
+  // Drive fwd 16 inches
+  while (timeElapsed < distanceToTime(32)) {
+    drive(100, 0, aligner(0), false);
+    wait(20, msec);
+    timeElapsed += 20;
+  }
+
+  // Stop
+  timeElapsed = 0;
+  drive(0, 0, 0, false);
+  wait(100, msec);
+
+  // Strafe left 27 inches
+  while (timeElapsed < distanceToTime(54)) {
+    drive(0, -100, aligner(0), false);
+    wait(20, msec);
+    timeElapsed += 20;
+  }
+
+  // Stop
+  timeElapsed = 0;
+  drive(0, 0, 0, false);
+  wait(100, msec);
+
+  // Rotate 180 degrees
+  while (fabs(Inertial.heading()) > 185 || fabs(Inertial.heading()) < 175) {
+    drive(0, 0, aligner(180), false);
+    wait(20, msec);
+  }
+
+  // Stop
+  timeElapsed = 0;
+  drive(0, 0, 0, false);
+  wait(250, msec);
+
+  // Drive fwd 16 inches (towards the loader)
+  while (timeElapsed < distanceToTime(32)) {
+    drive(100, 0, aligner(180), true);
+    wait(20, msec);
+    timeElapsed += 20;
+  }
+
+  // Stop
+  timeElapsed = 0;
+  drive(0, 0, 0, false);
+  wait(100, msec);
+  
+  // Intake for 5s
+  intake(100);
+  wait(5000, msec);
+  intake(0);
 
 }
 
@@ -67,7 +119,7 @@ void autonomous(void) {
 void usercontrol(void) {
   // User control code here, inside the loop
   double targetHeading = 0;
-  bool robotOriented = false;
+  bool robotOriented = true;
   AlignmentState alignment = NORTH;
 
   double intakeVelocity = 0;
@@ -114,6 +166,7 @@ void usercontrol(void) {
         break;
       case SOUTH:
         targetHeading = 180;
+        robotOriented = false;
         turnVelocity = aligner(targetHeading);
         break;
       case CUSTOM:

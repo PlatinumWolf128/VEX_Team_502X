@@ -16,11 +16,15 @@ motor BackRight(BACK_RIGHT_PORT, ratio6_1);
 motor_group AllDriveMotors(FrontLeft, FrontRight, BackLeft, BackRight);
 
 // The motors for the front flex-wheels in the intake.
-motor LeftFlexwheel(LEFT_FLEXWHEEL_PORT);
-motor RightFlexwheel(RIGHT_FLEXWHEEL_PORT, true);
+motor FrontLeftFlexwheel(LEFT_FLEXWHEEL_PORT);
+motor FrontRightFlexwheel(RIGHT_FLEXWHEEL_PORT, true);
+motor LowerIntake(LOWER_INTAKE_PORT, true);
+motor UpperIntakeLeft(UPPER_INTAKE_LEFT);
+motor UpperIntakeRight(UPPER_INTAKE_RIGHT);
+motor IntakeExit(INTAKE_EXIT_PORT);
 
 // The motor group for the flexwheel motors.
-motor_group Flexhweels(LeftFlexwheel, RightFlexwheel);
+motor_group IntakeMotors(FrontLeftFlexwheel, FrontRightFlexwheel, LowerIntake, UpperIntakeLeft, UpperIntakeRight, IntakeExit);
 
 // All the sensors.
 inertial Inertial(INERTIAL_SENSOR_PORT);
@@ -35,9 +39,9 @@ double integral = 0;
 double aligner(double targetHeading) {
 
     // The PID constants.
-    const double kP = 0.62;
-    const double kI = 0.044;
-    const double kD = 0.24;
+    const double kP = 0.43;
+    const double kI = 0.014;
+    const double kD = 0.27;
 
     double currentHeading = Inertial.heading(degrees);
 
@@ -107,12 +111,18 @@ void intake(double intakeVelocity) {
 
     if (intakeVelocity == 0) {
         // If intakeVelocity is 0, stop the motors
-        Flexhweels.stop(brake);
+        IntakeMotors.stop(brake);
     } else {
         // If intakeVelocity is +100, then the blocks get intaked.
         // If intakeVelocity is -100, then the blocks get outtaked.
-        Flexhweels.spin(fwd, intakeVelocity, pct);
+        IntakeMotors.spin(fwd, intakeVelocity, pct);
     }
 
+
+}
+
+double distanceToTime(double distanceInInches) {
+
+    return distanceInInches * 16.3;
 
 }
