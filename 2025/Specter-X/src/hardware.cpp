@@ -20,7 +20,7 @@ motor FrontLeftFlexwheel(LEFT_FLEXWHEEL_PORT);
 motor FrontRightFlexwheel(RIGHT_FLEXWHEEL_PORT, true);
 motor LowerIntake(LOWER_INTAKE_PORT, true);
 motor UpperIntakeLeft(UPPER_INTAKE_LEFT);
-motor UpperIntakeRight(UPPER_INTAKE_RIGHT);
+motor UpperIntakeRight(UPPER_INTAKE_RIGHT, true);
 motor IntakeExit(INTAKE_EXIT_PORT);
 
 // The motor group for the flexwheel motors.
@@ -30,7 +30,7 @@ motor_group IntakeMotors(FrontLeftFlexwheel, FrontRightFlexwheel, LowerIntake, U
 inertial Inertial(INERTIAL_SENSOR_PORT);
 
 // The pneumatics solenoids.
-pneumatics LiftPneumatics(Brain.ThreeWirePort.C);
+pneumatics LiftPneumatics(Brain.ThreeWirePort.A);
 
 double error = 0;
 double previousError = 0;

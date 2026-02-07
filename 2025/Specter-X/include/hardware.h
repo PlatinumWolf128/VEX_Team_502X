@@ -7,6 +7,8 @@ using namespace vex;
 extern brain Brain;
 extern controller Controller;
 
+// NOTE: Ports 8, 9, and 11 do NOT work. DO NOT use them!
+
 // The motor ports for the drivetrain motors.
 const int FRONT_LEFT_PORT = PORT12; 
 const int FRONT_RIGHT_PORT = PORT13;
@@ -14,15 +16,15 @@ const int BACK_LEFT_PORT = PORT14;
 const int BACK_RIGHT_PORT = PORT15;
 
 // The motor ports for the front flex-wheels in the intake.
-const int LEFT_FLEXWHEEL_PORT = PORT3;
-const int RIGHT_FLEXWHEEL_PORT = PORT4;
-const int LOWER_INTAKE_PORT = PORT5;
-const int UPPER_INTAKE_LEFT = PORT7;
-const int UPPER_INTAKE_RIGHT = PORT8;
-const int INTAKE_EXIT_PORT = PORT11;
+const int LEFT_FLEXWHEEL_PORT = PORT10;
+const int RIGHT_FLEXWHEEL_PORT = PORT2;
+const int LOWER_INTAKE_PORT = PORT3;
+const int UPPER_INTAKE_LEFT = PORT4;
+const int UPPER_INTAKE_RIGHT = PORT5;
+const int INTAKE_EXIT_PORT = PORT6;
 
 // The port for all the sensors.
-const int INERTIAL_SENSOR_PORT = PORT19;
+const int INERTIAL_SENSOR_PORT = PORT7;
 
 // The motors for the drivetrain.
 extern motor FrontLeft;
