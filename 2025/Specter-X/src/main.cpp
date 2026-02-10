@@ -32,7 +32,10 @@ void pre_auton(void) {
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 
-  Inertial.calibrate(3);
+  Inertial.calibrate();
+  while (Inertial.isCalibrating()) {
+    //
+  }
   Inertial.setHeading(0, degrees);
 
 }
@@ -50,7 +53,12 @@ void pre_auton(void) {
 void autonomous(void) {
   
   Inertial.setHeading(0, degrees);
-  int timeElapsed = 0;
+  wait(500, msec);
+
+  drive(0, -50, 0, false);
+  wait(500, msec);
+  drive(0, 0, 0, false);
+  /*int timeElapsed = 0;
 
   // Drive fwd 16 inches
   while (timeElapsed < distanceToTime(32)) {
@@ -103,7 +111,7 @@ void autonomous(void) {
   intake(100);
   wait(5000, msec);
   intake(0);
-
+ */
 }
 
 /*---------------------------------------------------------------------------*/
@@ -119,12 +127,16 @@ void autonomous(void) {
 void usercontrol(void) {
   // User control code here, inside the loop
   double targetHeading = 0;
-  bool robotOriented = true;
+  bool robotOriented = false;
   AlignmentState alignment = NORTH;
 
   double intakeVelocity = 0;
 
   while (1) {
+
+    bool prevLeftPressed = false;
+    bool prevRightPressed = false;
+    bool prevXPressed = false;
     
     double forwardVelocity = Controller.Axis3.position();
     double strafeVelocity = Controller.Axis4.position();
@@ -138,22 +150,25 @@ void usercontrol(void) {
     } else if (Controller.ButtonDown.pressing()) {
       // Align to "South" (the opposite of North)
       alignment = SOUTH;
-    } else if (Controller.ButtonRight.pressing()) {
+    } else if (Controller.ButtonRight.pressing() && !prevRightPressed) {
       // Rotate the target heading 45 degrees clockwise.
       targetHeading += 45;
       alignment = CUSTOM;
-    } else if (Controller.ButtonLeft.pressing()) {
+      prevRightPressed = true;
+    } else if (Controller.ButtonLeft.pressing() && !prevLeftPressed) {
       // Rotate the target heading 45 degrees counterclockwise.
       targetHeading -= 45;
       alignment = CUSTOM;
+      prevLeftPressed = true;
     } else if (Controller.ButtonY.pressing()) {
       // Set the current heading as the target to align to.
       alignment = MAINTAIN_CURRENT;
       targetHeading = currentHeading;
-    } else if (Controller.ButtonX.pressing()) {
+    } else if (Controller.ButtonX.pressing() && !prevXPressed) {
       // Toggle whether or not the drivetrain is robot-oriented.
       robotOriented = !robotOriented;
-      wait(100, msec);
+      prevXPressed = true;
+      wait(1000, msec);
     } else if (fabs(turnVelocity) >= DEADZONE) {
       // Quit alignment mode.
       alignment = NEUTRAL;
@@ -186,17 +201,29 @@ void usercontrol(void) {
     }
 
     if (Controller.ButtonL1.pressing()) {
-      intakeVelocity = 100;
-    } else if (Controller.ButtonR1.pressing()) {
+      // Outtake
       intakeVelocity = -100;
+    } else if (Controller.ButtonR1.pressing()) {
+      // Intake
+      intakeVelocity = 100;
     } else {
       intakeVelocity = 0;
     }
 
-    if (Controller.ButtonL2.pressing()) {
+    if (!Controller.ButtonLeft.pressing()) {
+      prevLeftPressed = false;
+    }
+    if (!Controller.ButtonRight.pressing()) {
+      prevRightPressed = false;
+    }
+    if (!Controller.ButtonX.pressing()) {
+      prevXPressed = false;
+    }
+
+    if (Controller.ButtonR2.pressing()) {
       // Raise the intake
       LiftPneumatics.set(true);
-    } else if (Controller.ButtonR2.pressing()) {
+    } else if (Controller.ButtonL2.pressing()) {
       // Lower the intake
       LiftPneumatics.set(false);
     } 
