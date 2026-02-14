@@ -34,7 +34,7 @@ void pre_auton(void) {
 
   Inertial.calibrate();
   while (Inertial.isCalibrating()) {
-    //
+    wait(20, msec);
   }
   Inertial.setHeading(0, degrees);
 
@@ -126,18 +126,21 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
-  double targetHeading = 0;
-  bool robotOriented = false;
-  AlignmentState alignment = NORTH;
 
-  double intakeVelocity = 0;
+  double targetHeading = 0;
+  AlignmentState alignment = NORTH;
+  IntakeState intakeState = HOLD;
+
+  bool robotOriented = false;
+  bool outtakeMode = false;
+
+  bool prevLeftPressed = false;
+  bool prevRightPressed = false;
+  bool prevXPressed = false;
+  bool prevAPressed = false;
 
   while (1) {
 
-    bool prevLeftPressed = false;
-    bool prevRightPressed = false;
-    bool prevXPressed = false;
-    
     double forwardVelocity = Controller.Axis3.position();
     double strafeVelocity = Controller.Axis4.position();
     double turnVelocity = Controller.Axis1.position();
@@ -168,7 +171,9 @@ void usercontrol(void) {
       // Toggle whether or not the drivetrain is robot-oriented.
       robotOriented = !robotOriented;
       prevXPressed = true;
-      wait(1000, msec);
+    } else if (Controller.ButtonA.pressing() && !prevAPressed) {
+      outtakeMode = !outtakeMode;
+      prevAPressed = true;
     } else if (fabs(turnVelocity) >= DEADZONE) {
       // Quit alignment mode.
       alignment = NEUTRAL;
@@ -191,8 +196,8 @@ void usercontrol(void) {
         turnVelocity = aligner(targetHeading);
         break;
       case NEUTRAL:
-        integral = 0;
-        previousError = 0;
+        turnVelocity = Controller.Axis1.position();
+        aligner(999);
         break;
     }
 
@@ -200,14 +205,17 @@ void usercontrol(void) {
       AllDriveMotors.stop(hold);
     }
 
-    if (Controller.ButtonL1.pressing()) {
-      // Outtake
-      intakeVelocity = -100;
+    if (Controller.ButtonL1.pressing() && outtakeMode) {
+      // Outtake to the top
+      intakeState = OUTTAKE_TO_TOP;
+    } else if (Controller.ButtonL1.pressing() && !outtakeMode) {
+      // Outtake to the bottom
+      intakeState = OUTTAKE_TO_BOTTOM;
     } else if (Controller.ButtonR1.pressing()) {
       // Intake
-      intakeVelocity = 100;
+      intakeState = INTAKE;
     } else {
-      intakeVelocity = 0;
+      intakeState = HOLD;
     }
 
     if (!Controller.ButtonLeft.pressing()) {
@@ -219,6 +227,9 @@ void usercontrol(void) {
     if (!Controller.ButtonX.pressing()) {
       prevXPressed = false;
     }
+    if (!Controller.ButtonA.pressing()) {
+      prevAPressed = false;
+    }
 
     if (Controller.ButtonR2.pressing()) {
       // Raise the intake
@@ -229,7 +240,7 @@ void usercontrol(void) {
     } 
 
     drive(forwardVelocity, strafeVelocity, turnVelocity, robotOriented);
-    intake(intakeVelocity);
+    intake(intakeState);
 
     // Sleep the task for a short amount of time to
     // prevent wasted resources.

@@ -19,8 +19,7 @@ const int BACK_RIGHT_PORT = PORT19;
 const int LEFT_FLEXWHEEL_PORT = PORT1;
 const int RIGHT_FLEXWHEEL_PORT = PORT2;
 const int LOWER_INTAKE_PORT = PORT20;
-const int UPPER_INTAKE_LEFT = PORT4;
-const int UPPER_INTAKE_RIGHT = PORT5;
+const int UPPER_INTAKE_PORT = PORT4;
 const int INTAKE_EXIT_PORT = PORT6;
 
 // The port for all the sensors.
@@ -39,8 +38,7 @@ extern motor_group AllDriveMotors;
 extern motor FrontLeftFlexwheel;
 extern motor FrontRightFlexwheel;
 extern motor LowerIntake;
-extern motor UpperIntakeLeft;
-extern motor UpperIntakeRight;
+extern motor UpperIntake;
 extern motor IntakeExit;
 
 // A motor group with all of the intake system motors.
@@ -59,7 +57,7 @@ extern pneumatics LiftPneumatics;
 // This is done because the joysticks are imperfect and don't always
 // return to position zero, so this establishes a range of position values that
 // act as position zero.
-const double DEADZONE = 3;
+const double DEADZONE = 5;
 
 // Ratio for converting from degrees to radians.
 const double DEG_TO_RAD = M_PI/180;
@@ -71,10 +69,11 @@ enum AlignmentState {NORTH,
                      MAINTAIN_CURRENT,
                      NEUTRAL};
 
-// Some values needed for the aligner() function's PID
-extern double error;
-extern double previousError;
-extern double integral;
+// The possible states for the intake system.
+enum IntakeState {HOLD,
+                  INTAKE,
+                  OUTTAKE_TO_BOTTOM,
+                  OUTTAKE_TO_TOP};
 
 /**
  * Controls the drivetrain using the holonomic drive formula and the values for
@@ -105,8 +104,20 @@ void drive(double forward, double strafe, double turn, bool robotOrientedDrive);
  */
 double aligner(double targetHeading);
 
-void intake(double intakeVelocity);
+void intake(IntakeState intakeState);
 
+/**
+ * Unused function that was supposed to let us input a distance in inches and
+ * find out how long it would take to drive that distance.
+ * 
+ * @param distanceInInches
+ * The distance we want the robot to drive, in inches.
+ * 
+ * @return
+ * Returns a time value in milliseconds, which represents how long it will take
+ * to drive the distance that we inputted.
+ * 
+ */
 double distanceToTime(double distanceInInches);
 
 
